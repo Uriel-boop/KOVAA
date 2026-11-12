@@ -1,0 +1,308 @@
+/* Estilos Globales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #F4F9FB; /* Fondo azul muy claro */
+    color: #333;
+}
+
+/* Barra de Navegación */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    height: 40px; /* Ajusta según el tamaño de tu imagen */
+}
+
+.logo-text {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    margin: 0 15px;
+    font-weight: 500;
+}
+
+.nav-links a.active {
+    color: #007A8C;
+    border-bottom: 2px solid #007A8C;
+}
+
+/* Estilos para el botón de Iniciar sesión en la navbar */
+a.btn-login {
+    background-color: #007A8C;
+    color: white !important; /* Importante para quitar el color azul de enlace */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none; /* Quita el subrayado */
+    display: inline-block; /* Permite el padding y margin */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+a.btn-login:hover {
+    background-color: #004B59;
+    transform: translateY(-2px);
+}
+/* Hero Section */
+.hero {
+    display: flex;
+    padding: 50px;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to right, #E0F2F9, #F4F9FB);
+}
+
+.hero-content {
+    flex: 1;
+    padding-right: 50px;
+}
+
+.badge {
+    background-color: #D0EBF2;
+    color: #007A8C;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.hero h1 {
+    font-size: 2.8em;
+    color: #004B59;
+    margin: 20px 0;
+    line-height: 1.2;
+}
+
+.hero p {
+    color: #555;
+    font-size: 1.1em;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background-color: #007A8C;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #007A8C;
+    padding: 12px 25px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.hero-image {
+    flex: 1;
+    text-align: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 20px;
+}
+
+/* Tarjetas Interactivas */
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 50px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    width: 30%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* EFECTO DE ELEVAR LA TARJETA AL PASAR EL MOUSE */
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,122,140,0.2);
+}
+
+.card .icon {
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.card h3 {
+    color: #004B59;
+    margin-bottom: 15px;
+}
+
+.card p {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+}
+
+.btn-card {
+    background: none;
+    border: none;
+    color: #007A8C;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.extra-info {
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    color: #007A8C;
+    font-size: 0.85em;
+}
+
+/* Sección Sofía y Carrusel */
+.sofia-section {
+    display: flex;
+    padding: 50px;
+    background-color: #fff;
+    align-items: center;
+    gap: 40px;
+}
+
+.sofia-text {
+    flex: 1;
+}
+
+.sofia-text h2 {
+    color: #004B59;
+    margin-bottom: 20px;
+}
+
+.sofia-text p {
+    margin-bottom: 10px;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Estilos del Carrusel */
+.carousel-container {
+    flex: 1;
+    position: relative;
+    max-width: 500px;
+    margin: auto;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.carousel-slide img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    display: block;
+}
+
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0,0,0,0.4);
+    border: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0,122,140,0.8);
+}
+
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@keyframes fade {
+    from {opacity: .4} 
+    to {opacity: 1}
+}
+
+/* Propósito */
+.purpose {
+    display: flex;
+    padding: 50px;
+    justify-content: space-between;
+    background-color: #E0F2F9;
+    align-items: center;
+}
+
+.purpose-title span {
+    color: #007A8C;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.purpose-title h2 {
+    font-size: 2em;
+    color: #004B59;
+    max-width: 400px;
+}
+
+.purpose-text {
+    max-width: 500px;
+}
+
+.purpose-text p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.btn-outline {
+    border: 2px solid #007A8C;
+    background: transparent;
+    color: #007A8C;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}

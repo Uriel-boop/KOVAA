@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA 2026 - Mapa & Geocercas IoT</title>
+    <!-- FontAwesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS para el mapa interactivo -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        :root {
+            --primary-accent: #008BA3;        
+            --primary-accent-hover: #006F82;  
+            --primary-text: #0E2A47;          
+            --brand-identity: #F25487;        
+            --brand-identity-hover: #D83C6F;  
+            --soft-pink: #FDECF0;             
+            --secondary-accent: #5E5CE6;      
+            --bg-gradient-turq: #EBF7FA;      
+            --body-text: #4A5568;             
+            --white-pure: #FFFFFF;            
+            --border-color: #CBD5E1;          
+            --nav-bg-inactive: #DFF0F4;       
+            --success-color: #10B981;         
+            --danger-color: #EF4444;          
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-gradient-turq);
+            margin: 0;
+            padding: 16px 20px;
+            color: var(--body-text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white-pure);
+            padding: 10px 24px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(14, 42, 71, 0.05);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background-color: var(--soft-pink);
+            color: var(--brand-identity);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .search-wrapper {
+            flex: 0 1 550px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 9px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            outline: none;
+            font-size: 0.88rem;
+            color: var(--body-text);
+            background-color: var(--white-pure);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-cart-header {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            color: var(--primary-text);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background-color: var(--brand-identity);
+            color: var(--white-pure);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            border: 1.5px solid var(--brand-identity);
+            color: var(--brand-identity);
+            background-color: transparent;
+            padding: 6px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--brand-identity);
+            color: var(--white-pure);
+        }
+
+        .main-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 16px;
+            background-color: var(--nav-bg-inactive);
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background-color: #CBE6ED;
+        }
+
+        .nav-btn.active {
+            background-color: var(--brand-identity) !important;
+            color: var(--white-pure) !important;
+            box-shadow: 0 3px 10px rgba(242, 84, 135, 0.3);
+        }
+
+        .main-card {
+            background: var(--white-pure);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(14, 42, 71, 0.04);
+            flex: 1;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .card-mapa {
+            background-color: var(--bg-gradient-turq);
+            border: 1px solid rgba(0, 139, 163, 0.15);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .mapa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .txt-geocerca {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-bottom: 3px;
+        }
+
+        .txt-residencia {
+            font-size: 0.82rem;
+            color: var(--body-text);
+        }
+
+        .badge-zona {
+            background-color: var(--soft-pink);
+            color: var(--brand-identity);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-zona.peligro {
+            background-color: #FEE2E2;
+            color: var(--danger-color);
+        }
+
+        .mapa-frame {
+            width: 100%;
+            height: 320px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1;
+        }
+
+        .info-coordenadas {
+            background-color: var(--white-pure);
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-coordenadas p {
+            font-size: 0.82rem;
+            color: var(--body-text);
+            line-height: 1.4;
+        }
+
+        .info-coordenadas strong {
+            color: var(--primary-text);
+        }
+
+        /* PANEL TELEMETRÍA */
+        .card-telemetria {
+            background-color: var(--primary-text);
+            color: var(--white-pure);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(14, 42, 71, 0.15);
+        }
+
+        .telemetria-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .telemetria-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--white-pure);
+        }
+
+        .telemetria-id {
+            font-size: 0.82rem;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+        }
+
+        .metric-row span {
+            opacity: 0.9;
+        }
+
+        .telemetria-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 110px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .val-lte { color: #A5F3FC; font-weight: 600; }
+        .val-bateria { color: var(--success-color); font-weight: 700; }
+        .val-temp { color: #F87171; font-weight: 700; }
+
+        .btn-alarma {
+            width: 100%;
+            margin-top: 18px;
+            background-color: var(--brand-identity);
+            color: var(--white-pure);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(242, 84, 135, 0.3);
+        }
+
+        .btn-alarma:hover { background-color: var(--brand-identity-hover); }
+
+        .btn-simular {
+            width: 100%;
+            margin-top: 10px;
+            background-color: var(--secondary-accent);
+            color: var(--white-pure);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 0.8rem;
+            color: var(--primary-text);
+            opacity: 0.8;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 850px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .main-navigation { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .nav-btn { width: 100%; }
+        }
+
+        /* Contenedor principal de la navegación en fila */
+.main-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Estilo base de los botones inactivos */
+.nav-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 16px;
+    background-color: #DFF0F4;
+    color: #4A5568;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo resaltado para la página activa actual */
+.nav-btn.active {
+    background-color: #F25487 !important;
+    color: white !important;
+}
+    </style>
+</head>
+<body>
+
+    <!-- Header Topbar -->
+    <header class="topbar">
+        <div class="brand-container">
+            <img src="static/img/LOGO_KOVA.png" alt="Logo KOVA" style="height: 48px; width: auto; border-radius: 6px;">
+            <span class="brand-badge">MAPA SATELITAL IoT</span>
+        </div>
+
+        <div class="search-wrapper">
+            <input type="text" class="search-bar" placeholder="Buscar por nombre, tutor, chip, o token NFC...">
+        </div>
+        <div class="header-actions">
+            <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Navegación Dinámica -->
+    <div id="navbar-container"></div>
+
+    <main class="main-card">
+        <h1 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-text); margin-bottom: 4px;">Mapa & Geocercas IoT</h1>
+        <p style="font-size: 0.88rem; color: var(--body-text); margin-bottom: 20px;">Seguimiento en tiempo real y perímetros de seguridad activados mediante geolocalización satelital.</p>
+
+        <div class="dashboard-grid">
+            <!-- PANEL IZQUIERDO: MAPA SATELITAL Y GEOCERCA -->
+            <div class="card-mapa">
+                <div class="mapa-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div class="txt-geocerca" id="geocerca-estado">Geocerca: Activa (Radio 10m)</div>
+                        <div class="txt-residencia" id="txt-ubicacion-nombre">Obteniendo ubicación...</div>
+                    </div>
+                    <!-- Selector de Mascota para el Mapa -->
+                    <div style="min-width: 180px;">
+                        <select id="select-mascota-mapa" class="pet-select" onchange="cambiarMascotaMapa(this.value)" style="padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 700; background: white; color: var(--primary-text);">
+                            <option value="">Cargando integrante de la familia...</option>
+                        </select>
+                    </div>
+                    <div id="badge-zona-html" class="badge-zona">Zona Segura</div>
+                </div>
+
+                <!-- Contenedor Leaflet Map -->
+                <div class="mapa-frame" id="satellital-map"></div>
+
+                <div class="info-coordenadas">
+                    <p><strong>Ubicación GPS:</strong> <span id="lbl-coords">Esperando señal...</span></p>
+                    <p><strong>Última actualización:</strong> <span id="lbl-tiempo">Hace un instante</span></p>
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO: TELEMETRÍA DE COLLAR -->
+            <div class="card-telemetria">
+                <div class="telemetria-header">
+                    <span class="telemetria-title">Estado de Collar Telemétrico</span>
+                    <span class="telemetria-id" id="lbl-collar-id">RE-15651</span>
+                </div>
+
+                <div class="metric-row">
+                    <span>Red LTE</span>
+                    <input type="text" id="input-lte" class="telemetria-input" value="-65 dBm">
+                </div>
+
+                <div class="metric-row">
+                    <span>Batería del Collar</span>
+                    <input type="text" id="input-bateria" class="telemetria-input" value="94%">
+                </div>
+
+                <div class="metric-row">
+                    <span>Temperatura del Collar</span>
+                    <input type="text" id="input-temp" class="telemetria-input" value="94.5 °C">
+                </div>
+
+                <div class="metric-row" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                    <span>Radio de Geocerca (Metros)</span>
+                    <input type="number" id="input-radio" class="telemetria-input" value="10" onchange="actualizarRadioGeocerca(this.value)">
+                </div>
+
+                <button class="btn-alarma" onclick="dispararAlarmaManual()">Generar Alarma</button>
+                <button class="btn-simular" id="btn-simular-perimetro" onclick="toggleSimulacionGeocerca()">Simular Salida de Perímetro (Prueba)</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        • Solución Tecnológica Desarrollada por <a href="https://www.jjmti.com.mx" target="_blank">JJM Tecnologías Innovadoras, S.A. de C.V.</a> •
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        let map;
+let markerMascota;
+let circuloGeocerca;
+let radioGeocercaMetros = 10;
+let centroGeocerca = [19.7041, -98.9804]; // Coordenada base
+let listaMascotasGlobal = [];
+let mascotaSeleccionadaIndex = 0;
+let mascotaInfo = { nombre: "Mascota", tutor: "Tutor", tel: "N/A", token: "N/A" };
+let estaFueraDeZona = false;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar barra de navegación unificada
+    const currentPage = window.location.pathname.split('/').pop() || 'mapa.html';
+    document.getElementById('navbar-container').innerHTML = `
+        <nav class="main-navigation">
+            <a href="/usuarios" class="nav-btn ${currentPage === 'kova_usuarios.html' ? 'active' : ''}">Expediente 360°</a>
+            <a href="/mapa" class="nav-btn ${currentPage === 'mapa.html' ? 'active' : ''}">Mapa & Geocercas</a>
+            <a href="/galeria" class="nav-btn ${currentPage === 'galeria.html' ? 'active' : ''}">Galería de Efectos</a>
+            <a href="/catalogo" class="nav-btn ${currentPage === 'catalogo.html' ? 'active' : ''}">Productos y Servicios</a>
+            <a href="/suscripciones" class="nav-btn ${currentPage === 'suscripciones.html' ? 'active' : ''}">Suscripciones</a>
+        </nav>
+    `;
+
+    // Inicializar Mapa base
+    inicializarMapaSatelital();
+
+    // Obtener todas las mascotas del usuario logueado
+    const storedUser = JSON.parse(localStorage.getItem('kova_current_user') || '{}');
+    const usuarioId = storedUser.id_usuario || storedUser.id;
+
+    if (usuarioId) {
+        fetch(`http://127.0.0.1:5000/api/mascotas/${usuarioId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && data.mascotas.length > 0) {
+                    listaMascotasGlobal = data.mascotas;
+                    poblarSelectorMascotas();
+                    seleccionarMascotaEnMapa(0); // Cargar la primera por defecto (ej. Manchas o Toby)
+                }
+            }).catch(e => console.log("Error al obtener mascotas:", e));
+    }
+});
+
+function poblarSelectorMascotas() {
+    const select = document.getElementById('select-mascota-mapa');
+    if (!select) return;
+    select.innerHTML = '';
+    listaMascotasGlobal.forEach((m, index) => {
+        let opt = document.createElement('option');
+        opt.value = index;
+        opt.textContent = m.nombre_mascota;
+        select.appendChild(opt);
+    });
+}
+
+function cambiarMascotaMapa(index) {
+    seleccionarMascotaEnMapa(parseInt(index));
+}
+
+function seleccionarMascotaEnMapa(index) {
+    if (!listaMascotasGlobal[index]) return;
+    mascotaSeleccionadaIndex = index;
+    let m = listaMascotasGlobal[index];
+
+    mascotaInfo = {
+        nombre: m.nombre_mascota,
+        tutor: m.nom_tutor || 'No registrado',
+        tel: m.tel_cont_1 || m.tel_cont_2 || 'No registrado',
+        token: m.token_nfc || 'N/A',
+        email: m.email_tutor || 'kevinurielremigioelizalde@gmail.com'
+    };
+
+    // Actualizar ID del collar en el panel de telemetría con el token de esta mascota
+    document.getElementById('lbl-collar-id').textContent = m.token_nfc || 'RE-15651';
+
+    // Resetear estado de alerta si estaba activa
+    estaFueraDeZona = false;
+    const btnSimular = document.getElementById('btn-simular-perimetro');
+    if(btnSimular) {
+        btnSimular.textContent = "Simular Salida de Perímetro (Prueba)";
+        btnSimular.style.backgroundColor = "var(--secondary-accent)";
+    }
+    let badge = document.getElementById('badge-zona-html');
+    if(badge) {
+        badge.textContent = "Zona Segura";
+        badge.className = "badge-zona";
+    }
+
+    // Actualizar posición en el mapa
+    if (markerMascota) {
+        markerMascota.setLatLng(centroGeocerca);
+        markerMascota.bindPopup(`<b>${m.nombre_mascota}</b><br>Tutor: ${m.nom_tutor}`).openPopup();
+    }
+    if (circuloGeocerca) {
+        circuloGeocerca.setStyle({ color: '#10B981', fillColor: '#10B981' });
+    }
+}
+
+function inicializarMapaSatelital() {
+    map = L.map('satellital-map').setView([19.7041, -98.9804], 16);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 19
+    }).addTo(map);
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                let lat = position.coords.latitude;
+                let lng = position.coords.longitude;
+                centroGeocerca = [lat, lng];
+                centrarMapaEn(lat, lng);
+                document.getElementById('txt-ubicacion-nombre').textContent = "Residencia: Ubicación GPS Actual";
+            },
+            (error) => {
+                centroGeocerca = [19.7041, -98.9804];
+                centrarMapaEn(centroGeocerca[0], centroGeocerca[1]);
+                document.getElementById('txt-ubicacion-nombre').textContent = "Residencia: Tecámac, Edo. Mex.";
+            },
+            { enableHighAccuracy: true }
+        );
+    } else {
+        centrarMapaEn(centroGeocerca[0], centroGeocerca[1]);
+    }
+}
+
+function centrarMapaEn(lat, lng) {
+    map.setView([lat, lng], 17);
+
+    let iconoMascota = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div style="background-color:#F25487; width:24px; height:24px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; color:white; font-size:10px;"><i class="fa-solid fa-dog"></i></div>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+
+    markerMascota = L.marker([lat, lng], { icon: iconoMascota }).addTo(map)
+        .bindPopup(`<b>${mascotaInfo.nombre}</b>`).openPopup();
+
+    circuloGeocerca = L.circle([lat, lng], {
+        color: '#10B981',
+        fillColor: '#10B981',
+        fillOpacity: 0.15,
+        radius: radioGeocercaMetros
+    }).addTo(map);
+
+    actualizarCoordenadasUI(lat, lng);
+}
+
+function actualizarRadioGeocerca(nuevoRadio) {
+    radioGeocercaMetros = parseFloat(nuevoRadio) || 100;
+    if (circuloGeocerca) circuloGeocerca.setRadius(radioGeocercaMetros);
+}
+
+function actualizarCoordenadasUI(lat, lng) {
+    document.getElementById('lbl-coords').textContent = `lat: ${lat.toFixed(4)} lon: ${lng.toFixed(4)}`;
+}
+
+// Función toggle para simular salida y regreso con la mascota activa en pantalla
+function toggleSimulacionGeocerca() {
+    if (!centroGeocerca) return;
+    const btnSimular = document.getElementById('btn-simular-perimetro');
+
+    if (!estaFueraDeZona) {
+        let latFuera = centroGeocerca[0] + 0.0015; 
+        let lngFuera = centroGeocerca[1];
+
+        markerMascota.setLatLng([latFuera, lngFuera]);
+        map.setView([latFuera, lngFuera], 17);
+        actualizarCoordenadasUI(latFuera, lngFuera);
+
+        document.getElementById('geocerca-estado').textContent = "¡ALERTA: Fuera de Perímetro!";
+        let badge = document.getElementById('badge-zona-html');
+        badge.textContent = "¡FUERA DE ZONA!";
+        badge.className = "badge-zona peligro";
+        if (circuloGeocerca) circuloGeocerca.setStyle({ color: '#EF4444', fillColor: '#EF4444' });
+
+        let ahora = new Date();
+        let fechaStr = ahora.toLocaleDateString();
+        let horaStr = ahora.toLocaleTimeString();
+
+        enviarAlertaServidor(fechaStr, horaStr);
+
+        alert(`⚠️ ALERTA KOVA IoT ⚠️\n\nTu familiar "${mascotaInfo.nombre}" ha salido de la cerca.\n\n📅 Fecha: ${fechaStr}\n⏰ Hora: ${horaStr}\n\n📋 Datos de la Mascota:\n- Tutor: ${mascotaInfo.tutor}\n- Teléfono: ${mascotaInfo.tel}\n- Token NFC: ${mascotaInfo.token}`);
+
+        btnSimular.textContent = "Regresar a Zona Segura";
+        btnSimular.style.backgroundColor = "#10B981";
+        estaFueraDeZona = true;
+    } else {
+        markerMascota.setLatLng(centroGeocerca);
+        map.setView(centroGeocerca, 17);
+        actualizarCoordenadasUI(centroGeocerca[0], centroGeocerca[1]);
+
+        document.getElementById('geocerca-estado').textContent = "Geocerca: Activa (Radio " + radioGeocercaMetros + "m)";
+        let badge = document.getElementById('badge-zona-html');
+        badge.textContent = "Zona Segura";
+        badge.className = "badge-zona";
+        if (circuloGeocerca) circuloGeocerca.setStyle({ color: '#10B981', fillColor: '#10B981' });
+
+        alert(`✅ "${mascotaInfo.nombre}" ha regresado exitosamente a la zona segura.`);
+
+        btnSimular.textContent = "Simular Salida de Perímetro (Prueba)";
+        btnSimular.style.backgroundColor = "var(--secondary-accent)";
+        estaFueraDeZona = false;
+    }
+}
+
+function enviarAlertaServidor(fecha, hora) {
+    fetch('http://127.0.0.1:5000/api/enviar_alerta_geocerca', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            nombre_mascota: mascotaInfo.nombre,
+            tutor: mascotaInfo.tutor,
+            email: mascotaInfo.email,
+            telefono: mascotaInfo.tel,
+            token_nfc: mascotaInfo.token,
+            fecha: fecha,
+            hora: hora
+        })
+    }).then(res => res.json()).catch(err => console.log("Error al notificar:", err));
+}
+
+function cerrarSesion() {
+            localStorage.removeItem('kova_current_user');
+            alert("Has cerrado sesión exitosamente.");
+            window.location.href = "/login";
+        }
+
+
+    </script>
+</body>
+</html>

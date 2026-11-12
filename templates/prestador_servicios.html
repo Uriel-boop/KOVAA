@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA 2026 - Panel Prestador de Servicios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-accent: #008BA3;        
+            --brand-identity: #F25487;        
+            --soft-pink: #FDECF0;             
+            --bg-gradient-turq: #EBF7FA;      
+            --body-text: #4A5568;             
+            --white-pure: #FFFFFF;            
+            --border-color: #CBD5E1;          
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: var(--bg-gradient-turq); padding: 20px; color: var(--body-text); }
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--white-pure); padding: 10px 24px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .brand-badge { background-color: var(--soft-pink); color: var(--brand-identity); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .btn-logout { border: 1.5px solid var(--brand-identity); color: var(--brand-identity); background: transparent; padding: 6px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        
+        .main-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 25px; }
+        .card { background: var(--white-pure); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .btn-kova { background-color: var(--brand-identity); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; }
+        
+        .imagenes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .img-slot { border: 2px dashed var(--border-color); height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; text-align: center; cursor: pointer; position: relative; overflow: hidden; background-color: #fafafa; }
+        .img-slot input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+        .img-slot span { pointer-events: none; z-index: 1; color: #666; }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="img/LOGO_KOVA.png" alt="Logo" style="height: 40px;">
+            <span class="brand-badge">Prestador de Servicios</span>
+        </div>
+        <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+    </header>
+
+    <h2 id="saludo-vendedor" style="margin-top: 20px; color: var(--primary-accent);">Hola, Bienvenido</h2>
+
+    <div class="main-container">
+        <div class="card">
+            <h3>Servicios Agregados</h3>
+            <div id="lista-resumida" style="margin-top: 15px; font-size: 0.9rem;">No hay servicios registrados aún.</div>
+            <button class="btn-kova" onclick="abrirModalRegistro()">Registrar servicio</button>
+        </div>
+
+        <div class="card">
+            <h3>Mis Servicios (Gestión)</h3>
+            <div id="lista-detallada" style="margin-top: 15px;">No hay ningún servicio en la lista.</div>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Servicio -->
+    <div id="modal-producto" class="modal">
+        <div class="modal-content">
+            <h3>Agregar Servicio</h3>
+            <form id="form-producto" onsubmit="guardarServicio(event)" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label>Tipo de servicio</label>
+                    <input type="text" id="tipo_servicio" name="tipo_servicio" required placeholder="Ej: Veterinaria, estética...">
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>Nombre del prestador</label><input type="text" id="nombre_prestador" name="nombre_prestador" required></div>
+                    <div class="form-group"><label>Edad (Años)</label><input type="number" id="edad" name="edad" min="18" required></div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción detallada</label>
+                    <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>Precio de cobro (MXN)</label><input type="number" step="0.01" id="precio" name="precio" required></div>
+                    <div class="form-group"><label>Días de servicio (Ej: Lun-Vie)</label><input type="text" id="dias_servicio" name="dias_servicio" required></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Lugar del servicio</label>
+                        <select id="lugar_servicio" name="lugar_servicio" required onchange="toggleUbicacion('div_ubicacion', this.value)">
+                            <option value="A domicilio">A domicilio</option>
+                            <option value="Sucursal física">Sucursal física</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="div_ubicacion" style="display:none;">
+                        <label>Ubicación exacta</label>
+                        <input type="text" id="ubicacion" name="ubicacion" placeholder="Dirección completa">
+                    </div>
+                </div>
+                <div class="form-group"><label>Contacto (Teléfono o Correo)</label><input type="text" id="contacto" name="contacto" required></div>
+                <div class="form-group">
+                    <label>Adjunta imágenes del servicio (Máximo 2)</label>
+                    <div class="imagenes-grid">
+                        <div class="img-slot" id="slot-1"><span>Imagen 1</span><input type="file" name="imagen1" accept="image/*" onchange="previewSlot(this, 1, 'slot')"></div>
+                        <div class="img-slot" id="slot-2"><span>Imagen 2</span><input type="file" name="imagen2" accept="image/*" onchange="previewSlot(this, 2, 'slot')"></div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-kova" style="flex: 1; margin:0;">Guardar Servicio</button>
+                    <button type="button" onclick="cerrarModalRegistro()" class="btn-kova" style="flex: 1; margin:0; background: var(--border-color); color: var(--body-text);">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Servicio -->
+    <div id="modal-editar" class="modal">
+        <div class="modal-content">
+            <h3>Editar Servicio</h3>
+            <form id="form-editar" onsubmit="actualizarServicio(event)" style="margin-top: 15px;" enctype="multipart/form-data">
+                <input type="hidden" id="edit_id_servicio" name="id_servicio">
+                <div class="form-group">
+                    <label>Tipo de servicio</label>
+                    <input type="text" id="edit_tipo_servicio" name="tipo_servicio" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>Nombre del prestador</label><input type="text" id="edit_nombre_prestador" name="nombre_prestador" required></div>
+                    <div class="form-group"><label>Edad</label><input type="number" id="edit_edad" name="edad" min="18" required></div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción detallada</label>
+                    <textarea id="edit_descripcion" name="descripcion" rows="3" required></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group"><label>Precio de cobro (MXN)</label><input type="number" step="0.01" id="edit_precio" name="precio" required></div>
+                    <div class="form-group"><label>Días de servicio</label><input type="text" id="edit_dias_servicio" name="dias_servicio" required></div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Lugar del servicio</label>
+                        <select id="edit_lugar_servicio" name="lugar_servicio" required onchange="toggleUbicacion('edit_div_ubicacion', this.value)">
+                            <option value="A domicilio">A domicilio</option>
+                            <option value="Sucursal física">Sucursal física</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="edit_div_ubicacion" style="display:none;">
+                        <label>Ubicación exacta</label>
+                        <input type="text" id="edit_ubicacion" name="ubicacion">
+                    </div>
+                </div>
+                <div class="form-group"><label>Contacto</label><input type="text" id="edit_contacto" name="contacto" required></div>
+                
+                <!-- Sección para modificar o agregar nuevas imágenes -->
+                <div class="form-group">
+                    <label>Actualizar imágenes (Opcional)</label>
+                    <div class="imagenes-grid">
+                        <div class="img-slot" id="edit-slot-1"><span>Imagen 1</span><input type="file" name="imagen1" accept="image/*" onchange="previewSlot(this, 1, 'edit-slot')"></div>
+                        <div class="img-slot" id="edit-slot-2"><span>Imagen 2</span><input type="file" name="imagen2" accept="image/*" onchange="previewSlot(this, 2, 'edit-slot')"></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-kova" style="flex: 1; margin:0;">Actualizar Cambios</button>
+                    <button type="button" onclick="cerrarModalEdicion()" class="btn-kova" style="flex: 1; margin:0; background: var(--border-color); color: var(--body-text);">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '';
+        let usuarioActual = null;
+        let serviciosGlobales = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            usuarioActual = JSON.parse(localStorage.getItem('kova_current_user') || '{}');
+            if(!usuarioActual.id_usuario) {
+                window.location.href = 'index.html';
+                return;
+            }
+            if(usuarioActual.nombre_completo) {
+                document.getElementById('saludo-vendedor').textContent = `Hola, "${usuarioActual.nombre_completo}", Bienvenido`;
+            }
+            cargarServicios();
+        });
+
+        function abrirModalRegistro() { document.getElementById('modal-producto').style.display = 'flex'; }
+        function cerrarModalRegistro() { document.getElementById('modal-producto').style.display = 'none'; }
+        function cerrarModalEdicion() { document.getElementById('modal-editar').style.display = 'none'; }
+
+        function toggleUbicacion(divId, valor) {
+            document.getElementById(divId).style.display = valor === 'Sucursal física' ? 'block' : 'none';
+        }
+
+        function previewSlot(input, num, prefix) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let slot = document.getElementById(`${prefix}-${num}`);
+                    slot.style.backgroundImage = `url(${e.target.result})`;
+                    slot.style.backgroundSize = 'cover';
+                    slot.style.backgroundPosition = 'center';
+                    let span = slot.querySelector('span');
+                    if(span) span.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function guardarServicio(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('form-producto'));
+            formData.append('id_usuario', usuarioActual.id_usuario);
+
+            try {
+                const res = await fetch(`${API_URL}/api/crear_servicio`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if(data.success || data.status === 'success') {
+                    alert("¡Servicio registrado con éxito!");
+                    cerrarModalRegistro();
+                    document.getElementById('form-producto').reset();
+                    for(let i=1; i<=2; i++) {
+                        let slot = document.getElementById(`slot-${i}`);
+                        slot.style.backgroundImage = '';
+                        let span = slot.querySelector('span');
+                        if(span) span.style.display = 'block';
+                    }
+                    cargarServicios();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Error de conexión");
+            }
+        }
+
+        async function cargarServicios() {
+            try {
+                const res = await fetch(`${API_URL}/api/mis_servicios/${usuarioActual.id_usuario}`);
+                const respuesta = await res.json();
+                serviciosGlobales = respuesta.data || respuesta || [];
+                
+                const lista = document.getElementById('lista-resumida'); 
+                const detalle = document.getElementById('lista-detallada'); 
+                
+                if (!Array.isArray(serviciosGlobales) || serviciosGlobales.length === 0) {
+                    lista.innerHTML = '<div style="margin-top: 15px; font-size: 0.9rem;">No hay servicios registrados aún.</div>';
+                    detalle.innerHTML = '<div style="margin-top: 15px;">No hay ningún servicio en la lista.</div>';
+                    return;
+                }
+
+                lista.innerHTML = '';
+                serviciosGlobales.forEach((serv, index) => {
+                    const item = document.createElement('div');
+                    item.style = 'padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.3s; font-weight: 500;';
+                    item.onmouseover = () => { item.style.backgroundColor = 'var(--soft-pink)'; item.style.color = 'var(--brand-identity)'; };
+                    item.onmouseout = () => { item.style.backgroundColor = 'transparent'; item.style.color = 'var(--body-text)'; };
+                    item.innerText = `${index + 1}. ${serv.tipo_servicio}`;
+                    item.onclick = () => mostrarDetalleServicio(serv);
+                    lista.appendChild(item);
+                });
+
+                if (serviciosGlobales.length > 0) mostrarDetalleServicio(serviciosGlobales[0]);
+            } catch (e) { 
+                console.error("Error cargando servicios:", e); 
+            }
+        }
+
+        function mostrarDetalleServicio(serv) {
+            const detalle = document.getElementById('lista-detallada');
+            let imgHtml = '';
+            if (serv.imagen1) imgHtml += `<img src="${API_URL}/static/uploads/${serv.imagen1}" style="width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #eee;">`;
+            if (serv.imagen2) imgHtml += `<img src="${API_URL}/static/uploads/${serv.imagen2}" style="width:120px; height:120px; object-fit:cover; border-radius:8px; border:1px solid #eee;">`;
+
+            let ubicacionHtml = serv.lugar_servicio === 'Sucursal física' && serv.ubicacion 
+                ? `<p style="margin-bottom:10px;"><strong>Ubicación:</strong> <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(serv.ubicacion)}" target="_blank" style="color:var(--primary-accent);">${serv.ubicacion}</a></p>` : '';
+
+            detalle.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); padding-bottom:15px; margin-bottom:15px;">
+                    <div>
+                        <h2 style="margin:0; color:var(--primary-accent);">${serv.tipo_servicio}</h2>
+                        <h3 style="margin:5px 0 0 0; color:var(--brand-identity);">$${serv.precio} MXN</h3>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-logout" style="background:#17a2b8; color:white; border:none; padding:8px 12px;" onclick='abrirEditar(${serv.id_servicio})'>✎ Editar</button>
+                        <button class="btn-logout" style="background:#dc3545; color:white; border:none; padding:8px 12px;" onclick="eliminarServicio(${serv.id_servicio})">🗑 Eliminar</button>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div>
+                        <p style="margin-bottom:10px;"><strong>Prestador:</strong> ${serv.nombre_prestador} (${serv.edad} años)</p>
+                        <p style="margin-bottom:10px;"><strong>Descripción:</strong><br>${serv.descripcion}</p>
+                    </div>
+                    <div>
+                        <p style="margin-bottom:10px;"><strong>Días de servicio:</strong> ${serv.dias_servicio}</p>
+                        <p style="margin-bottom:10px;"><strong>Modalidad:</strong> ${serv.lugar_servicio}</p>
+                        ${ubicacionHtml}
+                        <p style="margin-bottom:10px;"><strong>Contacto:</strong> ${serv.contacto}</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                    ${imgHtml}
+                </div>
+            `;
+        }
+
+        function abrirEditar(idServicio) {
+            let s = serviciosGlobales.find(item => item.id_servicio === idServicio);
+            if(!s) return;
+
+            document.getElementById('edit_id_servicio').value = s.id_servicio;
+            document.getElementById('edit_tipo_servicio').value = s.tipo_servicio;
+            document.getElementById('edit_nombre_prestador').value = s.nombre_prestador;
+            document.getElementById('edit_edad').value = s.edad;
+            document.getElementById('edit_descripcion').value = s.descripcion;
+            document.getElementById('edit_precio').value = s.precio;
+            document.getElementById('edit_dias_servicio').value = s.dias_servicio;
+            document.getElementById('edit_contacto').value = s.contacto;
+            
+            const selLugar = document.getElementById('edit_lugar_servicio');
+            selLugar.value = s.lugar_servicio;
+            toggleUbicacion('edit_div_ubicacion', s.lugar_servicio);
+            document.getElementById('edit_ubicacion').value = s.ubicacion || '';
+
+            // Limpiar slots de edición
+            for(let i=1; i<=2; i++) {
+                let slot = document.getElementById(`edit-slot-${i}`);
+                if(slot) {
+                    slot.style.backgroundImage = '';
+                    let span = slot.querySelector('span');
+                    if(span) span.style.display = 'block';
+                }
+            }
+
+            document.getElementById('modal-editar').style.display = 'flex';
+        }
+
+        async function actualizarServicio(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit_id_servicio').value;
+            const formData = new FormData(document.getElementById('form-editar'));
+
+            try {
+                const res = await fetch(`${API_URL}/api/editar_servicio/${id}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if(data.success || data.status === 'success') {
+                    alert("¡Servicio actualizado correctamente!");
+                    cerrarModalEdicion();
+                    cargarServicios();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch(err) {
+                console.error(err);
+            }
+        }
+
+        function eliminarServicio(idServicio) {
+    if(confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
+        fetch(`${API_URL}/api/eliminar_servicio/${idServicio}`, {
+            method: 'DELETE'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success' || data.success) {
+                alert("Servicio eliminado exitosamente.");
+                cargarServicios();
+            } else {
+                alert("Error al eliminar: " + data.message);
+            }
+        });
+    }
+}
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

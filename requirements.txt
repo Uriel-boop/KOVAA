@@ -1,0 +1,10 @@
+Flask==3.0.3
+Flask-Cors==4.0.0
+Flask-Mail==0.9.1
+mysql-connector-python==8.3.0
+gunicorn==21.2.0
+requests==2.31.0
+twilio==9.0.0
+Pillow==10.2.0
+rembg==2.0.50
+google-auth==2.29.0

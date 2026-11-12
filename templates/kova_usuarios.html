@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA 2026 - Expediente Canino</title>
+    <!-- FontAwesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Librería para generar PDF desde HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-accent: #008BA3;        
+            --primary-accent-hover: #006F82;  
+            --primary-text: #0E2A47;          
+            --brand-identity: #F25487;        
+            --brand-identity-hover: #D83C6F;  
+            --soft-pink: #FDECF0;             
+            --secondary-accent: #5E5CE6;      
+            --bg-gradient-turq: #EBF7FA;      
+            --body-text: #4A5568;             
+            --white-pure: #FFFFFF;            
+            --border-color: #CBD5E1;          
+            --nav-bg-inactive: #DFF0F4;       
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-gradient-turq);
+            margin: 0;
+            padding: 16px 20px;
+            color: var(--body-text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--white-pure);
+            padding: 10px 24px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(14, 42, 71, 0.05);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background-color: var(--soft-pink);
+            color: var(--brand-identity);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+
+        .search-wrapper {
+            flex: 0 1 550px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 9px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            outline: none;
+            font-size: 0.88rem;
+            color: var(--body-text);
+            background-color: var(--white-pure);
+        }
+        .search-bar:focus {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(0, 139, 163, 0.15);
+        }
+
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-cart-header {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            color: var(--primary-text);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background-color: var(--brand-identity);
+            color: var(--white-pure);
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            border: 1.5px solid var(--brand-identity);
+            color: var(--brand-identity);
+            background-color: transparent;
+            padding: 6px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--brand-identity);
+            color: var(--white-pure);
+        }
+
+        .main-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 16px;
+            background-color: var(--nav-bg-inactive);
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-btn.active {
+            background-color: var(--brand-identity) !important;
+            color: var(--white-pure) !important;
+            box-shadow: 0 3px 10px rgba(242, 84, 135, 0.3);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--white-pure);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(14, 42, 71, 0.04);
+            color: var(--body-text);
+        }
+
+        .user-greeting {
+            background: linear-gradient(135deg, rgba(0, 139, 163, 0.12) 0%, rgba(0, 139, 163, 0.03) 100%);
+            border-left: 4px solid var(--primary-accent);
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary-text);
+        }
+
+        .pet-select-container {
+            margin-bottom: 15px;
+        }
+
+        .pet-select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border-color);
+            font-weight: 700;
+            background-color: var(--bg-gradient-turq);
+            color: var(--primary-text);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .pet-photo-container {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .pet-photo-container img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .nfc-tag-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-accent);
+            color: var(--white-pure);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(253, 236, 240, 0.6) 0%, rgba(235, 247, 250, 0.5) 100%);
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid rgba(0, 139, 163, 0.15);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .info-val {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin-top: 2px;
+            word-break: break-word;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            margin-top: 10px;
+            background-color: var(--primary-accent);
+            color: var(--white-pure);
+            box-shadow: 0 3px 8px rgba(0, 139, 163, 0.25);
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-accent);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(14, 42, 71, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--white-pure);
+            padding: 25px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: var(--body-text);
+            box-shadow: 0 10px 25px rgba(14, 42, 71, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-text);
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: var(--body-text);
+            outline: none;
+        }
+
+        .disease-warning {
+            color: var(--brand-identity) !important;
+            font-weight: 700;
+        }
+
+        footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 0.8rem;
+            color: var(--primary-text);
+            opacity: 0.8;
+            margin-top: 24px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--primary-accent); padding-bottom: 10px;
+        }
+
+        .close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #888; }
+        .form-section { margin-top: 15px; }
+        .form-section h3 {
+            color: var(--brand-identity); font-size: 16px; margin-bottom: 10px;
+            border-bottom: 1px solid #eee; padding-bottom: 4px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-full { grid-column: 1 / -1; }
+
+        .btn-kova {
+            background-color: var(--primary-accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-carnet {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Estilos del historial */
+        .btn-subopcion {
+            background-color: #ffffff;
+            border: 1.5px solid var(--border-color);
+            color: var(--primary-text);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-subopcion:hover {
+            border-color: var(--primary-accent);
+            background-color: var(--bg-gradient-turq);
+        }
+
+        .btn-subopcion.active {
+            background-color: var(--brand-identity);
+            color: var(--white-pure);
+            border-color: var(--brand-identity);
+            box-shadow: 0 2px 6px rgba(242, 84, 135, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Topbar -->
+    <header class="topbar">
+        <div class="brand-container">
+            <img src="static/img/LOGO_KOVA.png" alt="Logo KOVA" style="height: 48px; width: auto; border-radius: 6px;">
+            <span class="brand-badge">EXPEDIENTE 360°</span>
+        </div>
+
+        <div class="search-wrapper">
+            <input type="text" class="search-bar" placeholder="Buscar por nombre, tutor, chip, o token NFC...">
+        </div>
+        <div class="header-actions">
+            <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Navegación Dinámica -->
+    <div id="navbar-container"></div>
+
+    <main class="main-container">
+        <!-- Sidebar Izquierda: Datos del Canino -->
+        <aside class="card">
+            <div class="user-greeting">
+                <span id="user-greeting-text">Hola, bienvenido</span>
+            </div>
+
+            <!-- Selector de Canino -->
+            <div id="pet-selector-wrapper" class="pet-select-container" style="display: none;">
+                <label style="font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 4px;">Seleccionar integrante de la familia:</label>
+                <select id="pet-select" class="pet-select" onchange="cambiarCanino(this.value)"></select>
+            </div>
+
+            <!-- Vista Sin Registro Inicial -->
+            <div id="no-pet-view" style="text-align: center; padding: 20px 0;">
+                <p>No tienes ningún integrante de tu familila aún registrado</p>
+                <button id="btnCompletarDatos" onclick="abrirModalCompletar()" style="width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">
+                    Completar datos del usuario
+                </button>
+                <button onclick="abrirModal('registro')" class="btn-action">Registrar Mascota</button>
+            </div>
+
+            <!-- Vista Con Datos de Mascota -->
+            <div id="pet-info-view" style="display: none;">
+                <div class="pet-photo-container">
+                    <img id="pet-img" src="" alt="Mascota">
+                    <span class="nfc-tag-badge">NFC SafeTouch AC-3</span>
+                </div>
+
+                <h2 id="pet-name" style="margin: 10px 0 5px 0;">--</h2>
+                <p id="pet-details" style="color: #4A5568; margin: 0 0 10px 0;">--</p>
+
+                <div class="info-box">
+                    <div class="info-label">Token NFC</div>
+                    <div id="pet-nfc" class="info-val">--</div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">Contacto del Tutor</div>
+                    <div id="pet-tutor-info" class="info-val">--</div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-label">Descripción / Salud</div>
+                    <div id="pet-description" class="info-val">--</div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <button onclick="abrirModal('registro')" class="btn-action">Registrar Mascota</button>
+                <button onclick="abrirModal('edicion')" class="btn-action">Editar Datos</button>
+                <button class="btn-action" onclick="exportarCarnetPDF()"><i class="fa-solid fa-file-pdf"></i> Exportar Carnet Digital Criptográfico</button>
+            </div>
+        </aside>
+
+        <!-- Panel Derecha: Historial Clínico -->
+        <section class="card">
+            <h2 style="margin-top: 0;">Historial Clínico</h2>
+            <div id="logs-container">
+                <div class="info-box" style="text-align: center; padding: 40px 20px; background: rgba(235, 247, 250, 0.4); border: 1px dashed rgba(0, 139, 163, 0.3);">
+                    <p style="color: var(--primary-text); margin: 0; font-weight: bold;">
+                        No hay ningún registro de actividad médica por el momento.
+                    </p>
+                    <span style="display: block; font-size: 0.8rem; color: var(--body-text); margin-top: 6px;">
+                        Las actualizaciones y escaneos realizados aparecerán aquí automáticamente.
+                    </span>
+                    <button class="btn-kova" onclick="abrirModalHistorial()" style="margin-top: 15px;">
+                        <i class="fa-solid fa-pen-to-square"></i> Actualizar historial clínico
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL HISTORIAL -->
+    <div id="modal-historial" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-file-medical"></i> Actualizar Historial Clínico</h2>
+                <button class="close-btn" onclick="cerrarModalHistorial()">&times;</button>
+            </div>
+            
+            <form id="form-actualizar-historial">
+                <input type="hidden" name="id_mascota" id="in_id_mascota" value="">
+
+                <div class="form-section">
+                    <h3><i class="fa-solid fa-paw"></i> Datos de la Mascota</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="in_nombre">Nombre del integrante de la familia</label>
+                            <input type="text" name="nombre_mascota" id="in_nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="in_sexo">Género</label>
+                            <select name="sexo" id="in_sexo">
+                                <option value="Macho">Macho</option>
+                                <option value="Hembra">Hembra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="in_fecha_nac">Fecha de nacimiento</label>
+                            <input type="date" name="fecha_nacimiento" id="in_fecha_nac">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_peso">Peso (Kg)</label>
+                            <input type="number" step="0.1" name="peso" id="in_peso">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_raza">Raza</label>
+                            <input type="text" name="raza" id="in_raza">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_color">Color</label>
+                            <input type="text" name="color" id="in_color">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_esterilizado">¿Esterilizado?</label>
+                            <select name="esterilizado" id="in_esterilizado">
+                                <option value="No">No</option>
+                                <option value="Sí">Sí</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="in_senas">Señas particulares</label>
+                            <input type="text" name="senas_particulares" id="in_senas">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fa-solid fa-user"></i> Datos del Tutor</h3>
+                    <div class="grid-2">
+                        <div class="form-group grid-full">
+                            <label for="in_tutor">Nombre completo del tutor</label>
+                            <input type="text" name="nombre_tutor" id="in_tutor" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="in_tel1">Teléfono 1</label>
+                            <input type="text" name="telefono_1" id="in_tel1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="in_tel2">Teléfono 2</label>
+                            <input type="text" name="telefono_2" id="in_tel2">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_email">Correo electrónico</label>
+                            <input type="email" name="email_tutor" id="in_email">
+                        </div>
+                        <div class="form-group">
+                            <label for="in_dir">Dirección de residencia</label>
+                            <input type="text" name="direccion" id="in_dir">
+                        </div>
+                    </div>
+                </div>
+
+               <div class="form-section">
+                    <h3><i class="fa-solid fa-syringe"></i> Sanidad y Consulta Médica</h3>
+                    
+                    <div class="form-group">
+                        <label for="select-actividad-medica">¿Qué actividad médica va a realizar?</label>
+                        <select id="select-actividad-medica" name="actividad_medica" class="pet-select" onchange="mostrarSubopcionesMedicas(this.value)" required>
+                            <option value="" disabled selected>-- Seleccione una actividad médica --</option>
+                            <option value="preventiva">Visita preventiva o de control</option>
+                            <option value="quirurgica">Consultas quirúrgicas y procedimientos</option>
+                            <option value="reproduccion">Reproducción y Obstetricia</option>
+                            <option value="especialidades">Especialidades avanzadas</option>
+                            <option value="enfermedad">Consultas médicas por enfermedad o urgencia</option>
+                        </select>
+                    </div>
+
+                    <!-- Contenedores dinámicos para las subopciones -->
+                    <div id="subopciones-container" style="margin-top: 15px;">
+                        
+                        <!-- Opción 1: Visita preventiva o de control (4 opciones) -->
+                        <div class="sub-grupo" data-grupo="preventiva" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioPreventiva(this, 'cachorros')">Consultas a cachorros</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioPreventiva(this, 'vacunacion')">Plan de vacunación</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioPreventiva(this, 'desparasitacion')">Desparasitación</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioPreventiva(this, 'geriatrico')">Chequeo geriátrico</button>
+                            </div>
+
+                            <!-- FORMULARIO 1: Consultas a cachorros (Imagen 1) -->
+                            <div id="form-cachorros" class="form-sub-especifico" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Consultas a cachorros</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Tipo de alimentación</label><input type="text" name="cachorro_alimentacion"></div>
+                                    <div class="form-group"><label>Convive con otras mascotas</label><input type="text" name="cachorro_convive"></div>
+                                    <div class="form-group grid-full"><label>Ha tenido vomito, diarrea o decaimiento</label><input type="text" name="cachorro_sintomas"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Examen general</h4>
+                                    <div class="form-group"><label>Frecuencia cardiaca</label><input type="text" name="cachorro_fc"></div>
+                                    <div class="form-group"><label>Temperatura</label><input type="text" name="cachorro_temp"></div>
+                                    <div class="form-group"><label>Palpitación abdominal</label><input type="text" name="cachorro_palpitacion"></div>
+                                    <div class="form-group"><label>Evaluación de mucosas</label><input type="text" name="cachorro_mucosas"></div>
+                                    <div class="form-group grid-full"><label>Hallazgos clínicos de parásitos externos</label><input type="text" name="cachorro_parasitos"></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 2: Plan de vacunación (Imagen 2) -->
+                            <div id="form-vacunacion" class="form-sub-especifico" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Plan de Vacunación</h4>
+                                <div class="grid-2">
+                                    <div class="form-group grid-full"><label>Es vacunación inicial o anual</label><input type="text" name="vac_tipo_periodo"></div>
+                                    <div class="form-group grid-full"><label>Que vacunas tiene ya puestas</label><input type="text" name="vac_aplicadas_previas"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Si ya cuenta con vacunas:</h4>
+                                    <div class="form-group grid-full"><label>Nombre comercial y laboratorio</label><input type="text" name="vac_nombre_comercial"></div>
+                                    <div class="form-group"><label>Número de lote</label><input type="text" name="vac_lote"></div>
+                                    <div class="form-group"><label>Fecha de caducidad</label><input type="date" name="vac_caducidad"></div>
+                                    <div class="form-group grid-full"><label>Tipo de vacuna (ej. Séxtuple, Antirrábica, Bordetella, etc.)</label><input type="text" name="vac_tipo_especifico"></div>
+                                    <div class="form-group"><label>Vía de administración</label><input type="text" name="vac_via"></div>
+                                    <div class="form-group"><label>Próxima cita</label><input type="date" name="vac_proxima_cita"></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 3: Desparasitación (Imagen 3) -->
+                            <div id="form-desparasitacion" class="form-sub-especifico" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Desparasitación</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Fecha de ultima desparasitación</label><input type="text" name="desp_frecuencia" placeholder="mensual, trimestral, etc."></div>
+                                    <div class="form-group"><label>Tipo de parásito a prevenir o tratar</label><input type="text" name="desp_tipo_parasito" placeholder="pulgas, garrapatas y ácaros"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Producto administrado</h4>
+                                    <div class="form-group"><label>Nombre comercial</label><input type="text" name="desp_nombre_comercial"></div>
+                                    <div class="form-group"><label>Principio activo</label><input type="text" name="desp_principio_activo" placeholder="Fipronil"></div>
+                                    <div class="form-group"><label>Dosis exacta aplicada</label><input type="text" name="desp_dosis"></div>
+                                    <div class="form-group"><label>Forma de administración</label><input type="text" name="desp_forma_admin" placeholder="Oral, tópica, inyectada, collar"></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 4: Chequeo geriátrico (Imagen 4) -->
+                            <div id="form-geriatrico" class="form-sub-especifico" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Chequeo Geriátrico</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Cambios de conducta</label><input type="text" name="ger_conducta"></div>
+                                    <div class="form-group"><label>Nivel de actividad</label><input type="text" name="ger_actividad"></div>
+                                    <div class="form-group"><label>Nivel de apetito</label><input type="text" name="ger_apetito"></div>
+                                    <div class="form-group"><label>Hábitos de defecación</label><input type="text" name="ger_defecacion"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Revisión osteoarticular</h4>
+                                    <div class="form-group"><label>Grado de movilidad</label><input type="text" name="ger_movilidad"></div>
+                                    <div class="form-group"><label>Presión arterial sistemática</label><input type="text" name="ger_presion"></div>
+                                    <div class="form-group grid-full"><label>Dolor a la palpación en columna o extremidades</label><input type="text" name="ger_dolor"></div>
+                                    <div class="form-group grid-full"><label>Resultados de laboratorio</label><input type="file" name="ger_laboratorio"></div>
+                                    <div class="form-group grid-full"><label>Plan de nutrición</label><textarea name="ger_nutricion" rows="2"></textarea></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Opción 2: Consultas quirúrgicas y procedimientos (4 opciones con sus formularios) -->
+                        <div class="sub-grupo" data-grupo="quirurgica" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioQuirurgica(this, 'esterilizacion')">Esterilización</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioQuirurgica(this, 'castracion')">Castración</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioQuirurgica(this, 'limpieza')">Limpieza dental</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioQuirurgica(this, 'tejidos')">Cirugías de tejidos blandos</button>
+                            </div>
+
+                            <!-- FORMULARIO 1: Esterilización (Imagen 1) -->
+                            <div id="form-esterilizacion" class="form-sub-quirurgica" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Esterilización</h4>
+                                <div class="grid-2">
+                                    <div class="form-group grid-full">
+                                        <label>Término médico exacto</label>
+                                        <input type="text" name="est_termino_medico" value="Retirada de ovarios y útero) u ovariectomía (solo ovarios)." readonly>
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Abordaje quirúrgico</label>
+                                        <input type="text" name="est_abordaje" placeholder="Incisión en la línea media ventral (abdomen) o por flanco (costado).">
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Hallazgos transquirúrgicos del aparato reproductor</label>
+                                        <input type="text" name="est_hallazgos" placeholder="Tamaño, color y aspecto del útero y los ovarios">
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Técnica de ligadura</label>
+                                        <input type="text" name="est_ligadura" placeholder="ej. técnica de tres pinzas, ligadura doble o energía avanzada">
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Cierre de pared abdominal</label>
+                                        <input type="text" name="est_cierre" placeholder="Especificar material y tipo de sutura en cada capa">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 2: Castración (Imagen 2) -->
+                            <div id="form-castracion" class="form-sub-quirurgica" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Castración</h4>
+                                <div class="grid-2">
+                                    <div class="form-group grid-full">
+                                        <label>Término médico exacto</label>
+                                        <input type="text" name="cas_termino_medico" value="Orquiectomía bilateral" readonly>
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Abordaje quirúrgico</label>
+                                        <input type="text" name="cas_abordaje" placeholder="Preescrotal o escrotal">
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Hallazgos transquirúrgicos del aparato reproductor</label>
+                                        <input type="text" name="cas_hallazgos" placeholder="Posición de los testículos, tamaño y simetría">
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Técnica de ligadura</label>
+                                        <input type="text" name="cas_ligadura" placeholder="Ligadura del cordón espermático (conducto deferente y vasos sanguíneos)">
+                                    </div>
+                                    <div class="form-group grid-full">
+                                        <label>Manejo del escroto (en adultos)</label>
+                                        <input type="text" name="cas_escroto" placeholder="Si se extirpó la bolsa escrotal o si se dejó intacta">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 3: Limpieza dental (Imagen 3) -->
+                            <div id="form-limpieza" class="form-sub-quirurgica" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Limpieza dental</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Registro de estado periodontal</label><input type="text" name="lim_periodontal"></div>
+                                    <div class="form-group"><label>Presencia de halitosis</label><input type="text" name="lim_halitosis"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Protocolo Anestésico</h4>
+                                    <div class="form-group"><label>Fármacos utilizados</label><input type="text" name="lim_farmacos"></div>
+                                    <div class="form-group"><label>Cantidad utilizada</label><input type="text" name="lim_cantidad"></div>
+                                    <div class="form-group grid-full"><label>Vía de administración</label><input type="text" name="lim_via"></div>
+                                    <div class="form-group grid-full"><label>Procedimiento realizado</label><input type="text" name="lim_procedimiento" placeholder="Uso de aparato de ultrasonido, aplicación de tratamiento, etc."></div>
+                                    <div class="form-group grid-full"><label>Extracciones (si aplica)</label><input type="text" name="lim_extracciones" placeholder="Si fue necesario extraer piezas dentales por daño severo"></div>
+                                    <div class="form-group grid-full"><label>Plan y Prevención en Casa</label><input type="text" name="lim_prevencion"></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 4: Cirugías de tejidos blandos (Imagen 4) -->
+                            <div id="form-tejidos" class="form-sub-quirurgica" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Cirugías de Tejido Blando</h4>
+                                <div class="grid-2">
+                                    <div class="form-group grid-full"><label>Motivo de Consulta</label><input type="text" name="tej_motivo"></div>
+                                    <div class="form-group"><label>Diagnostico de laboratorio</label><input type="file" name="tej_diag_lab"></div>
+                                    <div class="form-group"><label>Clasificación ASA</label><input type="text" name="tej_asa"></div>
+                                    <div class="form-group grid-full"><label>Protocolo de fármacos</label><input type="text" name="tej_protocolo"></div>
+                                    <div class="form-group"><label>Tiempo total de anestesia</label><input type="text" name="tej_tiempo_anes"></div>
+                                    <div class="form-group"><label>Tiempo total de la cirugía</label><input type="text" name="tej_tiempo_cirugia"></div>
+                                    <div class="form-group grid-full"><label>Localización anatómica exacta</label><input type="text" name="tej_localizacion"></div>
+                                    <div class="form-group grid-full"><label>Procedimiento realizado paso a paso</label><textarea name="tej_paso_a_paso" rows="2"></textarea></div>
+                                    <div class="form-group"><label>Viabilidad de los tejidos</label><input type="text" name="tej_viabilidad"></div>
+                                    <div class="form-group"><label>Muestras enviadas a laboratorio</label><input type="text" name="tej_muestra_lab" placeholder="Código de la muestra"></div>
+                                    <div class="form-group grid-full"><label>Plan terapéutico</label><textarea name="tej_terapeutico" rows="2"></textarea></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opción 3: Reproducción y Obstetricia (2 opciones con formularios) -->
+                        <div class="sub-grupo" data-grupo="reproduccion" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioReproduccion(this, 'gestacion')">Control de Gestación</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioReproduccion(this, 'parto')">Asistencia al Parto / Cesárea</button>
+                            </div>
+
+                            <!-- FORMULARIO 1: Control de Gestación (Imagen 1) -->
+                            <div id="form-gestacion" class="form-sub-reproduccion" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Control de Gestión</h4>
+                                <div class="grid-2">
+                                    <div class="form-group grid-full"><label>Fecha de ovulación</label><input type="date" name="ges_ovulacion"></div>
+                                    <div class="form-group"><label>Monitoreo ecográfico</label><input type="file" name="ges_adjuntar_ecografia"></div>
+                                    <div class="form-group"><label>Fecha de ecografía</label><input type="date" name="ges_fecha_ecografia"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Validación fetal</h4>
+                                    <div class="form-group"><label>Frecuencia cardiaca fetal</label><input type="text" name="ges_fcf"></div>
+                                    <div class="form-group"><label>Cantidad aproximada de fetos</label><input type="number" name="ges_cant_fetos"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Plan de nutrición</h4>
+                                    <div class="form-group grid-full"><label>Plan de nutrición con suplemento o vitaminas</label><textarea name="ges_nutricion" rows="2"></textarea></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 2: Asistencia al Parto / Cesárea (Imagen 2) -->
+                            <div id="form-parto" class="form-sub-reproduccion" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Parto natural con asistencia</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Hora de inicio de la primer fase de trabajo de parto</label><input type="time" name="parto_fase1"></div>
+                                    <div class="form-group"><label>Hora de inicio de la segunda fase de trabajo de parto</label><input type="time" name="parto_fase2"></div>
+                                    <div class="form-group"><label>Cuantos cachorros nacieron</label><input type="number" name="parto_total_cachorros"></div>
+                                    <div class="form-group"><label>Hora de expulsión de cada cachorro</label><input type="text" name="parto_hora_expulsion" placeholder="Ej. 14:10, 14:35..."></div>
+                                    <div class="form-group"><label>Sexo de la cría</label><input type="text" name="parto_sexo_cria"></div>
+                                    <div class="form-group"><label>Peso de la cría</label><input type="text" name="parto_peso_cria"></div>
+                                    <div class="form-group"><label>Color/señas de la cría</label><input type="text" name="parto_senas_cria"></div>
+                                    <div class="form-group"><label>Estado del cachorro al nacer</label><input type="text" name="parto_estado_nacer"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opción 4: Especialidades avanzadas (2 opciones con formularios) -->
+                        <div class="sub-grupo" data-grupo="especialidades" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioEspecialidad(this, 'fisioterapia')">Fisioterapia y Rehabilitación</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioEspecialidad(this, 'nutricion')">Nutrición Veterinaria</button>
+                            </div>
+
+                            <!-- FORMULARIO 1: Fisioterapia y Rehabilitación (Imagen 3) -->
+                            <div id="form-fisioterapia" class="form-sub-especialidades" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Fisioterapeuta y Rehabilitación</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Grado de movilidad</label><input type="text" name="fisio_movilidad" placeholder="luxación patelar (I a IV)"></div>
+                                    <div class="form-group"><label>Grado de dolor</label><input type="text" name="fisio_dolor"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Evaluación Neurológica Básica</h4>
+                                    <div class="form-group grid-full"><label>Reflejos en patas delanteras y traseras, sensibilidad profunda y marcha</label><input type="text" name="fisio_reflejos"></div>
+                                    <div class="form-group grid-full"><label>Motivo de la terapia</label><input type="text" name="fisio_motivo" placeholder="ej. post-operatorio de cirugía de rodilla"></div>
+                                    <div class="form-group grid-full"><label>Plan de terapias</label><textarea name="fisio_plan" rows="2" placeholder="Uso de caminadora subacuática (temperatura del agua, tiempo de sesión...)"></textarea></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Seguimiento y Progreso</h4>
+                                    <div class="form-group grid-full"><label>Registro de la mejoría en escala de claudicación</label><input type="text" name="fisio_progreso" placeholder="cómo apoya la pata al caminar"></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 2: Nutrición Veterinaria (Imagen 4) -->
+                            <div id="form-nutricion" class="form-sub-especialidades" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Nutrición Veterinaria</h4>
+                                <div class="grid-2">
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Evaluación Nutricional Inicial</h4>
+                                    <div class="form-group"><label>Peso exacto</label><input type="text" name="nut_peso"></div>
+                                    <div class="form-group"><label>Condición corporal (CC)</label><input type="text" name="nut_cc" placeholder="del 1 al 9"></div>
+                                    <div class="form-group"><label>Masa muscular</label><input type="text" name="nut_masa"></div>
+                                    <div class="form-group"><label>Tipo de alimento</label><input type="text" name="nut_tipo_alimento" placeholder="seco, húmedo, mixto, comida casera"></div>
+                                    <div class="form-group"><label>Cantidad de comida diaria</label><input type="text" name="nut_cantidad_diaria" placeholder="número de raciones al día"></div>
+                                    <div class="form-group"><label>Snacks o premios</label><input type="text" name="nut_snacks" placeholder="trozo pequeño de pan o carne"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Cálculo de Requerimientos Energéticos (RER y MER)</h4>
+                                    <div class="form-group grid-full"><label>Cálculo de Kilocalorías</label><input type="text" name="nut_kcal"></div>
+                                    <div class="form-group grid-full"><label>Dieta específica</label><textarea name="nut_dieta_especifica" rows="2" placeholder="Dieta de mantenimiento, comercial Mini/Toy o prescripción médica (renal, hepática...)"></textarea></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Opción 5: Consultas médicas por enfermedad o urgencia (2 opciones con formularios) -->
+                        <div class="sub-grupo" data-grupo="enfermedad" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioEnfermedad(this, 'general')">Consulta general</button>
+                                <button type="button" class="btn-subopcion" onclick="seleccionarFormularioEnfermedad(this, 'urgencias')">Urgencias médicas</button>
+                            </div>
+
+                            <!-- FORMULARIO 1: Consulta general (Imagen 1) -->
+                            <div id="form-general" class="form-sub-enfermedad" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Consulta General</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Tiempo de síntomas</label><input type="text" name="cg_tiempo_sintomas"></div>
+                                    <div class="form-group"><label>Frecuencia cardiaca</label><input type="text" name="cg_fc"></div>
+                                    <div class="form-group"><label>Cambios del entorno</label><input type="text" name="cg_entorno" placeholder="alimentación o si tuvo acceso a tóxicos/basura"></div>
+                                    <div class="form-group"><label>Temperatura</label><input type="text" name="cg_temp"></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Exploración física</h4>
+                                    <div class="form-group grid-full"><label>Sistemas evaluados</label><input type="text" name="cg_exploracion" placeholder="Sistema Cardiovascular, Sistema Digestivo y Abdominal, Sistema Nervioso / Craneal"></div>
+                                    <div class="form-group grid-full"><label>Registro de estudios (si es necesario)</label><input type="file" name="cg_estudios"></div>
+                                    <div class="form-group grid-full"><label>Diagnóstico</label><input type="text" name="cg_diagnostico" placeholder="Ej. Gastroenteritis aguda, Colapso traqueal grado II, o Hipoglucemia secundaria"></div>
+                                    <div class="form-group grid-full"><label>Receta médica</label><textarea name="cg_receta" rows="2" placeholder="Dosis exactas milimétricas (en mililitros o fracciones de pastilla, ajustadas al peso en gramos)"></textarea></div>
+                                </div>
+                            </div>
+
+                            <!-- FORMULARIO 2: Urgencias médicas (Imagen 2) -->
+                            <div id="form-urgencias" class="form-sub-enfermedad" style="display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <h4 style="color: var(--brand-identity); margin-bottom: 10px; font-size: 0.95rem;">Urgencias Médicas</h4>
+                                <div class="grid-2">
+                                    <div class="form-group"><label>Triage (Motivo principal de la urgencia)</label><input type="text" name="urg_triage" placeholder="ej. atropello, convulsiones"></div>
+                                    <div class="form-group"><label>Estado de conciencia</label><input type="text" name="urg_conciencia" placeholder="alerta, estuporoso, comatoso"></div>
+                                    <div class="form-group grid-full"><label>Signos cardiacos</label><input type="text" name="urg_signos_cardiacos"></div>
+                                    <div class="form-group grid-full"><label>Estabilización Inmediata</label><input type="text" name="urg_estabilizacion" placeholder="Si fue con oxigenoterapia, acceso vascular o Tipo de solución administrada"></div>
+                                    <div class="form-group grid-full"><label>Fármacos administrados por minuto/hora</label><input type="text" name="urg_farmacos" placeholder="ej. Anticonvulsivantes como Diazepam o Levetiracetam, protectores gástricos..."></div>
+                                    <h4 class="grid-full" style="color: var(--primary-accent); font-size: 0.9rem; margin-top: 5px;">Evolución</h4>
+                                    <div class="form-group grid-full"><label>Registro de respuesta del paciente</label><input type="text" name="urg_respuesta"></div>
+                                    <div class="form-group grid-full"><label>Decisión médica posterior</label><input type="text" name="urg_decision"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <input type="hidden" id="subopcion_seleccionada" name="subopcion_medica" value="">
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fa-solid fa-paperclip"></i> Evidencia o Archivo Adjunto</h3>
+                    <div class="form-group">
+                        <label>Subir imagen, PDF u otro formato de la consulta:</label>
+                        <input type="file" name="consulta_imagen" class="form-control" accept="image/*,.pdf,.doc,.docx">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-kova" style="margin-top: 20px; width: 100%; justify-content: center;">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar en Base de Datos
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PLANTILLA OCULTA PARA GENERAR EL PDF -->
+    <div id="pdf-template" style="display: none; background: #ffffff; padding: 25px; font-family: Arial, sans-serif; color: #333; width: 700px;">
+        <div style="background: linear-gradient(135deg, #008BA3, #F25487); color: #fff; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="margin: 0; font-size: 20px;">KOVA - CARNET DIGITAL</h1>
+                <p style="margin: 4px 0 0 0; font-size: 11px; opacity: 0.9;">Expediente Clínico Veterinario Criptográfico</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0; font-weight: bold; font-size: 11px;" id="pdf_token">TOKEN: N/A</p>
+                <p style="margin: 2px 0 0 0; font-size: 10px;" id="pdf_emision"></p>
+            </div>
+        </div>
+
+        <!-- DATOS DE IDENTIFICACIÓN -->
+        <div style="border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; background: #f9f9f9;">
+            <div style="background: #e9ecef; padding: 8px 12px; font-weight: bold; font-size: 12px; border-bottom: 1px solid #ddd; text-transform: uppercase;">Datos de Identificación</div>
+            <div style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px;">
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Nombre:</strong><div id="p_nombre" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Sexo:</strong><div id="p_sexo" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Fecha de nacimiento:</strong><div id="p_nac" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Peso:</strong><div id="p_peso" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px; grid-column: 1 / -1;"><strong>Raza:</strong><div id="p_raza" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Color:</strong><div id="p_color" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Esterilizado:</strong><div id="p_esteril" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px; grid-column: 1 / -1;"><strong>Señas Particulares:</strong><div id="p_senas" style="font-weight: bold; font-size: 12px; margin-top: 2px;"></div></div>
+            </div>
+        </div>
+
+        <!-- CONTACTO -->
+        <div style="border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; background: #f9f9f9;">
+            <div style="background: #e9ecef; padding: 8px 12px; font-weight: bold; font-size: 12px; border-bottom: 1px solid #ddd; text-transform: uppercase;">Contacto</div>
+            <div style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px;">
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px; grid-column: 1 / -1;"><strong>Nombre del Tutor:</strong><div id="p_tutor" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Teléfono 1:</strong><div id="p_tel1" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;"><strong>Teléfono 2:</strong><div id="p_tel2" style="font-weight: bold; font-size: 13px; margin-top: 2px;"></div></div>
+                <div style="background: #fff; padding: 6px 10px; border: 1px solid #eee; border-radius: 4px; grid-column: 1 / -1;"><strong>Email:</strong><div id="p_email" style="font-weight: bold; font-size: 12px; margin-top: 2px;"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COMPLETAR PERFIL -->
+    <div id="modalCompletarPerfil" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: #ffffff; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; position: relative;">
+            <span onclick="cerrarModalCompletar()" style="position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 20px; font-weight: bold;">&times;</span>
+            <h3 style="margin-top: 0; color: #333;">Completar Perfil</h3>
+            <form onsubmit="guardarDatosUsuario(event)">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px;">Teléfono (10 dígitos):</label>
+                    <input type="tel" id="comp_telefono" maxlength="10" pattern="\d{10}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px;">Contraseña:</label>
+                    <input type="password" id="comp_contrasena" minlength="8" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                </div>
+                <button type="submit" style="width: 100%; padding: 12px; background-color: #008BA3; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Guardar Información</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTRO / EDICIÓN DE MASCOTA -->
+    <div id="modal-registro" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-top:0;">Registrar Mascota</h2>
+            <form id="form-mascota" onsubmit="guardarMascota(event)">
+                <input type="hidden" id="m-id-mascota" value="">
+                <div class="form-group">
+                    <label>Nombre de la Mascota:</label>
+                    <input type="text" id="m-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Nacimiento:</label>
+                    <input type="date" id="m-fecha-nacimiento" required>
+                </div>
+                <div class="form-group">
+                    <label>Color:</label>
+                    <input type="text" id="m-color" required>
+                </div>
+                <div class="form-group">
+                    <label>Peso (kg):</label>
+                    <input type="number" step="0.01" id="m-peso" required>
+                </div>
+                <div class="form-group">
+                    <label id="lbl-imagen">Foto de la Mascota (Galería/Cámara):</label>
+                    <input type="file" id="m-imagen" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Número Token NFC:</label>
+                    <input type="text" id="m-nfc" placeholder="NFC-KOV-2026-XXXXX" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Tutor:</label>
+                    <input type="text" id="m-tutor" required>
+                </div>
+                <div class="form-group">
+                    <label>Primer Teléfono de Contacto:</label>
+                    <input type="tel" id="m-tel1" required>
+                </div>
+                <div class="form-group">
+                    <label>Segundo Teléfono de Contacto:</label>
+                    <input type="tel" id="m-tel2">
+                </div>
+                <div class="form-group">
+                    <label>Tercer Teléfono de Contacto:</label>
+                    <input type="tel" id="m-tel3">
+                </div>
+                <div class="form-group">
+                    <label>Cuarto Teléfono de Contacto:</label>
+                    <input type="tel" id="m-tel4">
+                </div>
+                <div class="form-group">
+                    <label>Quinto Teléfono de Contacto:</label>
+                    <input type="tel" id="m-tel5">
+                </div>
+                <div class="form-group">
+                    <label>Descripción / Condición Médica:</label>
+                    <textarea id="m-descripcion" rows="3"></textarea>
+                </div>
+                <button type="submit" id="btn-submit-modal" class="btn-action">Guardar Registro</button>
+                <button type="button" onclick="cerrarModal()" class="btn-action btn-secondary">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        • Solución Tecnológica Desarrollada por <a href="https://www.jjmti.com.mx" target="_blank">JJM Tecnologías Innovadoras, S.A. de C.V.</a> •
+    </footer>
+
+    <script>
+        let listaMascotas = [];
+        let mascotaSeleccionadaIndex = 0;
+        let base64Imagen = "";
+        let modoModal = 'registro';
+        let ultimoHistorialClinico = null;
+
+        document.getElementById('m-imagen').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    base64Imagen = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('kova_current_user') || sessionStorage.getItem('usuario');
+            if (storedUser) {
+                const user = JSON.parse(storedUser);
+                document.getElementById('user-greeting-text').textContent = `Hola, ${user.nombre_completo}, bienvenido`;
+                const usuarioId = user.id_usuario || user.id;
+                if (usuarioId) {
+                    cargarMascotas(usuarioId);
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        async function cargarMascotas(usuarioId) {
+            try {
+                const res = await fetch(`http://127.0.0.1:5000/api/mascotas/${usuarioId}`);
+                const data = await res.json();
+
+                if (data.status === 'success' && data.mascotas.length > 0) {
+                    listaMascotas = data.mascotas;
+                    document.getElementById('no-pet-view').style.display = 'none';
+                    document.getElementById('pet-info-view').style.display = 'block';
+
+                    const select = document.getElementById('pet-select');
+                    select.innerHTML = '';
+                    listaMascotas.forEach((m, index) => {
+                        select.innerHTML += `<option value="${index}">${m.nombre_mascota}</option>`;
+                    });
+
+                    document.getElementById('pet-selector-wrapper').style.display = 'block';
+                    select.value = mascotaSeleccionadaIndex;
+                    mostrarDetalleMascota(mascotaSeleccionadaIndex);
+                } else {
+                    document.getElementById('no-pet-view').style.display = 'block';
+                    document.getElementById('pet-info-view').style.display = 'none';
+                    document.getElementById('pet-selector-wrapper').style.display = 'none';
+                }
+            } catch (err) {
+                console.error("Error al cargar mascotas:", err);
+            }
+        }
+
+        function cambiarCanino(index) {
+            mascotaSeleccionadaIndex = parseInt(index);
+            const m = listaMascotas[mascotaSeleccionadaIndex];
+            if (!m) return;
+
+            mostrarDetalleMascota(mascotaSeleccionadaIndex);
+            if (m.id_mascota) {
+                cargarHistorialClinico(m.id_mascota);
+            }
+        }
+
+        function mostrarDetalleMascota(index) {
+            mascotaSeleccionadaIndex = index;
+            const m = listaMascotas[index];
+            if (!m) return;
+
+            document.getElementById('pet-img').src = m.imagen || 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?q=80&w=400';
+            document.getElementById('pet-name').textContent = m.nombre_mascota;
+            document.getElementById('pet-details').textContent = `${m.color} • ${m.peso_kg} kg`;
+            document.getElementById('pet-nfc').textContent = m.token_nfc || 'N/A';
+            
+            const telefonos = [m.tel_cont_1, m.tel_cont_2, m.tel_cont_3, m.tel_cont_4, m.tel_cont_5]
+                .filter(t => t && t.toString().trim() !== '')
+                .join(' / ');
+
+            document.getElementById('pet-tutor-info').textContent = `${m.nom_tutor} (${telefonos})`;
+            const descElem = document.getElementById('pet-description');
+            const descText = m.descripcion || 'Sin observaciones.';
+            descElem.textContent = descText;
+        }
+
+        function abrirModal(tipo) {
+            modoModal = tipo;
+            const storedUser = JSON.parse(localStorage.getItem('kova_current_user') || '{}');
+            base64Imagen = "";
+
+            const modal = document.getElementById('modal-registro');
+            if (!modal) return;
+            const formMascota = document.getElementById('form-mascota');
+
+            if (modoModal === 'registro') {
+                document.getElementById('modal-title').textContent = 'Registrar Mascota';
+                document.getElementById('btn-submit-modal').textContent = 'Guardar Registro';
+                if (formMascota) formMascota.reset();
+                document.getElementById('m-id-mascota').value = '';
+                document.getElementById('m-tutor').value = storedUser.nombre_completo || '';
+                document.getElementById('m-tel1').value = storedUser.telefono || '';
+                document.getElementById('m-imagen').required = true;
+            } else if (modoModal === 'edicion') {
+                const m = listaMascotas[mascotaSeleccionadaIndex];
+                if (!m) {
+                    alert('❌ Por favor selecciona una mascota para editar.');
+                    return;
+                }
+
+                document.getElementById('modal-title').textContent = 'Editar Datos de Mascota';
+                document.getElementById('btn-submit-modal').textContent = 'Actualizar Datos';
+                
+                document.getElementById('m-id-mascota').value = m.id_mascota || '';
+                document.getElementById('m-nombre').value = m.nombre_mascota || '';
+                document.getElementById('m-fecha-nacimiento').value = m.fecha_nacimiento ? m.fecha_nacimiento.split('T')[0] : '';
+                document.getElementById('m-color').value = m.color || '';
+                document.getElementById('m-peso').value = m.peso_kg || '';
+                document.getElementById('m-nfc').value = m.token_nfc || '';
+                document.getElementById('m-tutor').value = m.nom_tutor || '';
+                document.getElementById('m-tel1').value = m.tel_cont_1 || '';
+                document.getElementById('m-tel2').value = m.tel_cont_2 || '';
+                document.getElementById('m-tel3').value = m.tel_cont_3 || '';
+                document.getElementById('m-tel4').value = m.tel_cont_4 || '';
+                document.getElementById('m-tel5').value = m.tel_cont_5 || '';
+                document.getElementById('m-descripcion').value = m.descripcion || '';
+                base64Imagen = ""; // Se reinicia para sobreescribir únicamente si el usuario elige una nueva imagen del input
+                
+                document.getElementById('m-imagen').required = false;
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-registro').style.display = 'none';
+        }
+
+        async function guardarMascota(e) {
+            if (e) e.preventDefault();
+
+            const storedUser = JSON.parse(localStorage.getItem('kova_current_user') || '{}');
+            const usuarioId = storedUser.id_usuario || storedUser.id;
+
+            if (!usuarioId) {
+                alert('❌ Error: No se encontró la sesión del usuario.');
+                return;
+            }
+
+            const mascotaIdInput = document.getElementById('m-id-mascota').value;
+
+            const payload = {
+                usuario_id: usuarioId,
+                nombre_mascota: document.getElementById('m-nombre').value,
+                fecha_nacimiento: document.getElementById('m-fecha-nacimiento').value || null,
+                color: document.getElementById('m-color').value,
+                peso_kg: parseFloat(document.getElementById('m-peso').value) || null,
+                imagen: base64Imagen,
+                token_nfc: document.getElementById('m-nfc').value,
+                nom_tutor: document.getElementById('m-tutor').value,
+                tel_cont_1: document.getElementById('m-tel1').value,
+                tel_cont_2: document.getElementById('m-tel2').value,
+                tel_cont_3: document.getElementById('m-tel3').value,
+                tel_cont_4: document.getElementById('m-tel4').value,
+                tel_cont_5: document.getElementById('m-tel5').value,
+                descripcion: document.getElementById('m-descripcion').value
+            };
+
+            try {
+                let url = 'http://127.0.0.1:5000/api/registrar_mascota';
+                let metodo = 'POST';
+
+                if (modoModal === 'edicion' && mascotaIdInput) {
+                    url = `http://127.0.0.1:5000/api/editar_mascota/${mascotaIdInput}`;
+                    metodo = 'PUT';
+                }
+
+                const res = await fetch(url, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    alert(modoModal === 'registro' ? '¡Mascota registrada correctamente!' : '¡Datos actualizados correctamente!');
+                    cerrarModal();
+                    cargarMascotas(usuarioId);
+                } else {
+                    alert(data.message || 'Error al procesar la solicitud.');
+                }
+            } catch (err) {
+                alert('❌ Error de conexión con el servidor Python.');
+                console.error(err);
+            }
+        }
+
+        function mostrarSubopcionesMedicas(categoria) {
+            const grupos = document.querySelectorAll('.sub-grupo');
+            grupos.forEach(grupo => {
+                if (grupo.getAttribute('data-grupo') === categoria) {
+                    grupo.style.display = 'block';
+                    
+                    const primerBtn = grupo.querySelector('.btn-subopcion');
+                    if (primerBtn) {
+                        grupo.querySelectorAll('.btn-subopcion').forEach(b => b.classList.remove('active'));
+                        primerBtn.classList.add('active');
+                        document.getElementById('subopcion_seleccionada').value = primerBtn.textContent.trim();
+                    }
+                } else {
+                    grupo.style.display = 'none';
+                }
+            });
+        }
+
+        function seleccionarSubopcion(buttonElement, nombreSubopcion) {
+            const parentContainer = buttonElement.parentElement;
+            parentContainer.querySelectorAll('.btn-subopcion').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+            document.getElementById('subopcion_seleccionada').value = nombreSubopcion;
+        }
+
+        function abrirModalHistorial() {
+            const m = listaMascotas[mascotaSeleccionadaIndex];
+            if (!m) {
+                alert("❌ Por favor selecciona un integrante de la familia primero.");
+                return;
+            }
+
+            const modal = document.getElementById('modal-historial');
+            if (!modal) return;
+
+            // Asignar el ID de la mascota activa
+            document.getElementById('in_id_mascota').value = m.id_mascota || '';
+
+            // Precargar datos de la Mascota
+            document.getElementById('in_nombre').value = m.nombre_mascota || '';
+            document.getElementById('in_sexo').value = m.sexo || 'Macho';
+            document.getElementById('in_fecha_nac').value = m.fecha_nacimiento ? m.fecha_nacimiento.split('T')[0] : '';
+            document.getElementById('in_peso').value = m.peso_kg || '';
+            document.getElementById('in_raza').value = m.raza || '';
+            document.getElementById('in_color').value = m.color || '';
+            document.getElementById('in_esterilizado').value = m.esterilizado || 'No';
+            document.getElementById('in_senas').value = m.descripcion || '';
+            
+            // Precargar datos del Tutor
+            document.getElementById('in_tutor').value = m.nom_tutor || '';
+            document.getElementById('in_tel1').value = m.tel_cont_1 || '';
+            document.getElementById('in_tel2').value = m.tel_cont_2 || '';
+            document.getElementById('in_email').value = m.email_tutor || '';
+            document.getElementById('in_dir').value = m.direccion_tutor || '';
+
+            // Resetear formularios dinámicos médicos
+            const selectActividad = document.getElementById('select-actividad-medica');
+            if (selectActividad) selectActividad.selectedIndex = 0;
+
+            document.querySelectorAll('.sub-grupo').forEach(grupo => {
+                grupo.style.display = 'none';
+                grupo.querySelectorAll('.btn-subopcion').forEach(b => b.classList.remove('active'));
+            });
+            document.getElementById('subopcion_seleccionada').value = '';
+
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModalHistorial() {
+            document.getElementById('modal-historial').style.display = 'none';
+        }
+
+        // ÚNICA FUNCIÓN LIMPIA PARA CARGAR EL HISTORIAL CLÍNICO Y RENDERIZAR EL JSON CORRECTAMENTE
+        async function cargarHistorialClinico(idMascota) {
+    const contenedor = document.getElementById('logs-container');
+    if (!contenedor) return;
+
+    try {
+        const res = await fetch(`http://127.0.0.1:5000/obtener_historial/${idMascota}`);
+        const data = await res.json();
+
+        let botonActualizarHtml = `
+            <div style="margin-bottom: 20px; text-align: right;">
+                <button class="btn-kova" onclick="abrirModalHistorial()">
+                    <i class="fa-solid fa-pen-to-square"></i> Actualizar historial clínico
+                </button>
+            </div>
+        `;
+
+        // Obtener la fecha de nacimiento oficial de la mascota seleccionada actualmente por si el registro histórico la guardó vacía
+        const mascotaActual = listaMascotas[mascotaSeleccionadaIndex] || {};
+        let fechaNacOficial = 'N/A';
+        if (mascotaActual.fecha_nacimiento) {
+            fechaNacOficial = mascotaActual.fecha_nacimiento.split('T')[0];
+        }
+
+        if (data.status === 'success' && data.data && data.data.length > 0) {
+            ultimoHistorialClinico = data.data[0];
+            let htmlCards = '';
+            
+            data.data.forEach(item => {
+                let fechaFormateada = 'Sin fecha';
+                if (item.consulta_fecha) {
+                    let d = new Date(item.consulta_fecha);
+                    fechaFormateada = isNaN(d) ? item.consulta_fecha : d.toLocaleString();
+                }
+
+                // Intentar leer la fecha del item; si no existe, usar la fecha oficial de la mascota
+                let fechaNac = fechaNacOficial;
+                if (item.fecha_nacimiento && item.fecha_nacimiento.trim() !== '' && item.fecha_nacimiento !== 'null') {
+                    fechaNac = item.fecha_nacimiento.split('T')[0];
+                }
+
+                // Procesar dinámicamente los detalles guardados en el JSON de cualquier formulario
+                // Procesar dinámicamente los detalles guardados en el JSON
+                let detallesHtml = '';
+                if (item.detalles_formulario) {
+                    try {
+                        let detallesObj = typeof item.detalles_formulario === 'string' 
+                            ? JSON.parse(item.detalles_formulario) 
+                            : item.detalles_formulario;
+
+                        for (let [key, value] of Object.entries(detallesObj)) {
+                            // Omitir si el valor está vacío, es nulo, o si es un campo oculto de otra categoría que se quedó con texto por defecto
+                            if (value && value.toString().trim() !== '' && value !== 'null') {
+                                
+                                // Filtro adicional de seguridad para ignorar campos predeterminados ajenos
+                                if (key.includes('est_termino_medico') && value.includes('Retirada de ovarios')) continue;
+                                if (key.includes('cas_termino_medico') && value.includes('Orquiectomía')) continue;
+
+                                let labelClean = key.replace(/_/g, ' ').toUpperCase();
+                                detallesHtml += `<div style="margin-bottom: 4px;"><strong>${labelClean}:</strong> ${value}</div>`;
+                            }
+                        }
+                    } catch (e) {
+                        detallesHtml = `<em>${item.detalles_formulario}</em>`;
+                    }
+                }
+
+                htmlCards += `
+                    <div class="card-carnet" style="background: #ffffff; border: 2px solid #008BA3; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                        <div class="carnet-header" style="display: flex; justify-content: space-between; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 15px;">
+                            <span style="font-weight: 700; color: #008BA3;"><i class="fa-regular fa-calendar-days"></i> Actualización: ${fechaFormateada}</span>
+                            <span style="font-weight: 700; color: #F25487;">Mascota: ${item.nombre_mascota || 'N/A'}</span>
+                        </div>
+                        <div class="carnet-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 13px;">
+                            <div><strong>Categoría:</strong> ${item.actividad_medica || 'General'}</div>
+                            <div><strong>Subopción:</strong> ${item.subopcion_medica || 'N/A'}</div>
+                            <div><strong>Sexo:</strong> ${item.sexo || 'N/A'}</div>
+                            <div><strong>F. Nacimiento:</strong> ${fechaNac}</div>
+                            <div><strong>Peso:</strong> ${item.peso || '0'} kg</div>
+                            <div><strong>Raza:</strong> ${item.raza || 'N/A'}</div>
+                            <div><strong>Color:</strong> ${item.color || 'N/A'}</div>
+                            <div><strong>Esterilizado:</strong> ${item.esterilizado || 'N/A'}</div>
+                            <div style="grid-column: 1 / -1;"><strong>Señas Particulares:</strong> ${item.senas_particulares || 'Ninguna'}</div>
+                            
+                            <div style="grid-column: 1 / -1; border-top: 1px dashed #eee; padding-top: 8px; margin-top: 5px;">
+                                <strong>Tutor:</strong> ${item.nombre_tutor || 'N/A'} | 
+                                <strong>Tel 1:</strong> ${item.telefono_1 || 'N/A'} | 
+                                <strong>Tel 2:</strong> ${item.telefono_2 || 'N/A'} | 
+                                <strong>Email:</strong> ${item.email_tutor || 'N/A'}
+                            </div>
+
+                            <div style="grid-column: 1 / -1; border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 5px;">
+                                <div style="font-weight: bold; color: #0f172a; margin-bottom: 6px;">Resumen / Datos de la Consulta:</div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 8px;">
+                                    ${detallesHtml || '<em>No se especificaron detalles adicionales.</em>'}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${item.consulta_imagen ? `
+                            <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
+                                <span style="font-size: 0.8rem; color: #64748b; font-weight: 600;"><i class="fa-solid fa-paperclip"></i> Archivo / Evidencia Adjunta:</span><br>
+                                <a href="http://127.0.0.1:5000/static/uploads/${item.consulta_imagen}" target="_blank" style="color: var(--primary-accent); font-weight: bold; text-decoration: underline; display: inline-block; margin-top: 5px;">
+                                    <i class="fa-solid fa-file-arrow-down"></i> Ver / Descargar archivo (${item.consulta_imagen})
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            contenedor.innerHTML = botonActualizarHtml + htmlCards;
+        } else {
+            ultimoHistorialClinico = null;
+            contenedor.innerHTML = `
+                ${botonActualizarHtml}
+                <div class="info-box" style="text-align: center; padding: 40px 20px;">
+                    <p style="color: var(--primary-text); margin: 0; font-weight: bold;">No hay ningún registro de actividad médica por el momento.</p>
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("Error al cargar historial clínico:", err);
+    }
+}
+
+        function verImagenGrande(url) {
+            let modalImg = document.getElementById('modal-imagen-grande');
+            if (!modalImg) {
+                const div = document.createElement('div');
+                div.id = 'modal-imagen-grande';
+                div.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:9999; cursor:pointer;";
+                div.innerHTML = `<img id="img-ampliada" style="max-width:90%; max-height:90%; border-radius:8px; box-shadow:0 5px 25px rgba(0,0,0,0.5);">`;
+                div.onclick = () => div.style.display = 'none';
+                document.body.appendChild(div);
+                modalImg = div;
+            }
+            document.getElementById('img-ampliada').src = url;
+            modalImg.style.display = 'flex';
+        }
+
+        document.getElementById('form-actualizar-historial').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+
+    // FILTRAR CAMPOS DINÁMICOS: Eliminar del FormData los campos de formularios ocultos
+    // Buscamos todos los sub-grupos y formularios específicos
+    const grupos = document.querySelectorAll('.sub-grupo');
+    grupos.forEach(grupo => {
+        if (grupo.style.display === 'none') {
+            // Si el grupo general está oculto, borramos todos sus inputs internos del FormData
+            grupo.querySelectorAll('input, select, textarea').forEach(input => {
+                if (input.name) formData.delete(input.name);
+            });
+        } else {
+            // Si el grupo está visible, revisamos sus sub-formularios específicos internos
+            const subFormularios = grupo.querySelectorAll('.form-sub-especifico, .form-sub-quirurgica, .form-sub-reproduccion, .form-sub-especialidades, .form-sub-enfermedad');
+            subFormularios.forEach(subForm => {
+                if (subForm.style.display === 'none') {
+                    subForm.querySelectorAll('input, select, textarea').forEach(input => {
+                        if (input.name) formData.delete(input.name);
+                    });
+                }
+            });
+        }
+    });
+
+    fetch('http://127.0.0.1:5000/actualizar_historial', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('✓ ' + data.message);
+            cerrarModalHistorial();
+            const m = listaMascotas[mascotaSeleccionadaIndex];
+            if (m && m.id_mascota) {
+                cargarHistorialClinico(m.id_mascota);
+            }
+        } else {
+            alert('❌ Error al guardar: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('❌ Error al conectar con el servidor.');
+    });
+});
+
+        function abrirModalCompletar() { document.getElementById('modalCompletarPerfil').style.display = 'flex'; }
+        function cerrarModalCompletar() { document.getElementById('modalCompletarPerfil').style.display = 'none'; }
+        function cerrarSesion() {
+            localStorage.removeItem('kova_current_user');
+            alert("Has cerrado sesión exitosamente.");
+            window.location.href = "/login";
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop() || 'kova_usuarios.html';
+            document.getElementById('navbar-container').innerHTML = `
+                <nav class="main-navigation">
+                    <a href="/usuarios" class="nav-btn ${currentPage === 'kova_usuarios.html' ? 'active' : ''}">Expediente 360°</a>
+                    <a href="/mapa" class="nav-btn ${currentPage === 'mapa.html' ? 'active' : ''}">Mapa & Geocercas</a>
+                    <a href="/galeria" class="nav-btn ${currentPage === 'galeria.html' ? 'active' : ''}">Galería de Efectos</a>
+                    <a href="/catalogo" class="nav-btn ${currentPage === 'catalogo.html' ? 'active' : ''}">Productos y Servicios</a>
+                    <a href="/suscripciones" class="nav-btn ${currentPage === 'suscripciones.html' ? 'active' : ''}">Suscripciones</a>
+                </nav>
+            `;
+        });
+
+        function exportarCarnetPDF() {
+            const m = listaMascotas[mascotaSeleccionadaIndex];
+            if (!m) {
+                alert("❌ Selecciona una mascota para exportar su carnet.");
+                return;
+            }
+
+            const datosH = ultimoHistorialClinico || {};
+
+            const elToken = document.getElementById('pdf_token');
+            const elEmision = document.getElementById('pdf_emision');
+            if (elToken) elToken.innerText = `TOKEN: ${m.token_nfc || 'N/A'}`;
+            if (elEmision) elEmision.innerText = `Emisión: ${new Date().toLocaleDateString()}`;
+
+            const pNombre = document.getElementById('p_nombre');
+            const pSexo = document.getElementById('p_sexo');
+            const pNac = document.getElementById('p_nac');
+            const pPeso = document.getElementById('p_peso');
+            const pRaza = document.getElementById('p_raza');
+            const pColor = document.getElementById('p_color');
+            const pEsteril = document.getElementById('p_esteril');
+            const pSenas = document.getElementById('p_senas');
+
+            if (pNombre) pNombre.innerText = datosH.nombre_mascota || m.nombre_mascota || '';
+            if (pSexo) pSexo.innerText = datosH.sexo || 'Macho';
+            if (pNac) pNac.innerText = datosH.fecha_nacimiento ? datosH.fecha_nacimiento.split('T')[0] : (m.fecha_nacimiento ? m.fecha_nacimiento.split('T')[0] : '');
+            if (pPeso) pPeso.innerText = (datosH.peso || m.peso_kg || '0') + ' Kg';
+            if (pRaza) pRaza.innerText = datosH.raza || m.raza || 'N/A';
+            if (pColor) pColor.innerText = datosH.color || m.color || '';
+            if (pEsteril) pEsteril.innerText = datosH.esterilizado || 'No (Entero)';
+            if (pSenas) pSenas.innerText = datosH.senas_particulares || m.descripcion || 'Sin observaciones';
+
+            const pTutor = document.getElementById('p_tutor');
+            const pTel1 = document.getElementById('p_tel1');
+            const pTel2 = document.getElementById('p_tel2');
+            const pEmail = document.getElementById('p_email');
+
+            if (pTutor) pTutor.innerText = datosH.nombre_tutor || m.nom_tutor || '';
+            if (pTel1) pTel1.innerText = datosH.telefono_1 || m.tel_cont_1 || '';
+            if (pTel2) pTel2.innerText = datosH.telefono_2 || m.tel_cont_2 || '';
+            if (pEmail) pEmail.innerText = datosH.email_tutor || 'No registrado';
+
+            const element = document.getElementById('pdf-template');
+            if (!element) {
+                alert("❌ Error: No se encontró la plantilla del PDF.");
+                return;
+            }
+
+            element.style.display = 'block';
+
+            const opt = {
+                margin:       0.3,
+                filename:     `Carnet_Digital_KOVA_${m.nombre_mascota}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save().then(() => {
+                element.style.display = 'none';
+            }).catch(err => {
+                console.error("Error al generar el PDF:", err);
+                element.style.display = 'none';
+            });
+        }
+
+        function seleccionarFormularioPreventiva(buttonElement, tipoFormulario) {
+            const parentContainer = buttonElement.parentElement;
+            parentContainer.querySelectorAll('.btn-subopcion').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+
+            document.querySelectorAll('.form-sub-especifico').forEach(form => {
+                form.style.display = 'none';
+            });
+
+            const formularioActivo = document.getElementById(`form-${tipoFormulario}`);
+            if (formularioActivo) {
+                formularioActivo.style.display = 'block';
+            }
+
+            document.getElementById('subopcion_seleccionada').value = buttonElement.textContent.trim();
+        }
+
+        function seleccionarFormularioQuirurgica(buttonElement, tipoFormulario) {
+            const parentContainer = buttonElement.parentElement;
+            parentContainer.querySelectorAll('.btn-subopcion').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            buttonElement.classList.add('active');
+
+            document.querySelectorAll('.form-sub-quirurgica').forEach(form => {
+                form.style.display = 'none';
+            });
+
+            const formularioActivo = document.getElementById(`form-${tipoFormulario}`);
+            if (formularioActivo) {
+                formularioActivo.style.display = 'block';
+            }
+
+            document.getElementById('subopcion_seleccionada').value = buttonElement.textContent.trim();
+        }
+
+        function seleccionarFormularioReproduccion(buttonElement, tipoFormulario) {
+            const parentContainer = buttonElement.parentElement;
+            parentContainer.querySelectorAll('.btn-subopcion').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            document.querySelectorAll('.form-sub-reproduccion').forEach(form => form.style.display = 'none');
+            const formularioActivo = document.getElementById(`form-${tipoFormulario}`);
+            if (formularioActivo) formularioActivo.style.display = 'block';
+
+            document.getElementById('subopcion_seleccionada').value = buttonElement.textContent.trim();
+        }
+
+        function seleccionarFormularioEspecialidad(buttonElement, tipoFormulario) {
+            const parentContainer = buttonElement.parentElement;
+            parentContainer.querySelectorAll('.btn-subopcion').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            document.querySelectorAll('.form-sub-especialidades').forEach(form => form.style.display = 'none');
+            const formularioActivo = document.getElementById(`form-${tipoFormulario}`);
+            if (formularioActivo) formularioActivo.style.display = 'block';
+
+            document.getElementById('subopcion_seleccionada').value = buttonElement.textContent.trim();
+        }
+
+        function seleccionarFormularioEnfermedad(buttonElement, tipoFormulario) {
+            const parentContainer = buttonElement.parentElement;
+            parentContainer.querySelectorAll('.btn-subopcion').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            document.querySelectorAll('.form-sub-enfermedad').forEach(form => form.style.display = 'none');
+            const formularioActivo = document.getElementById(`form-${tipoFormulario}`);
+            if (formularioActivo) formularioActivo.style.display = 'block';
+
+            document.getElementById('subopcion_seleccionada').value = buttonElement.textContent.trim();
+        }
+    </script>
+</body>
+</html>

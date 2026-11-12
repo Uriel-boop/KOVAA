@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suscripciones | KOVA</title>
+    <!-- SDK de PayPal -->
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=MXN"></script>
+    <style>
+        :root {
+            --primary-pink: #ff4f81;
+            --primary-pink-hover: #e83e6f;
+            --dark-teal: #238b8e;
+            --teal-light: #e0f2f1;
+            --bg-light: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        
+            /* NUEVA PALETA DE COLORES KOVA */
+            --primary-accent: #008BA3;        /* Azul Turquesa / Cyan: Botones CTA, Badges */
+            --primary-accent-hover: #006F82;  /* Azul Turquesa Oscuro (hover) */
+            --primary-text: #0E2A47;          /* Azul Marino / Índigo: Títulos, Encabezados */
+            --brand-identity: #F25487;        /* Rosa Magenta KOVA: Destacados, Pestaña Activa */
+            --brand-identity-hover: #D83C6F;  /* Rosa Magenta Oscuro (hover) */
+            --soft-pink: #FDECF0;             /* Rosa Pastel Suave: Fondos cálidos / Badges */
+            --secondary-accent: #5E5CE6;      /* Azul Lavanda / Violeta: Iconografía / Secundarios */
+            --bg-gradient-turq: #EBF7FA;      /* Fondo Turquesa Claro general */
+            --body-text: #4A5568;             /* Gris Oscuro Neutro: Párrafos y subtítulos */
+            --white-pure: #FFFFFF;            /* Blanco Puro: Contenedores y tarjetas */
+            --border-color: #CBD5E1;          /* Borde gris neutro */
+            --nav-bg-inactive: #DFF0F4;       /* Fondo inactivo de navegación */
+        }
+
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 10px;
+            color: var(--text-dark);
+        }
+
+        
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* === ENCABEZADO TOPBAR === */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background-color: #fde8ef;
+            color: var(--primary-pink);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .search-wrapper {
+            flex: 0 1 520px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 9px 20px;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            outline: none;
+            font-size: 0.9rem;
+            color: #475569;
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-bar:focus {
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 0 3px rgba(255, 79, 129, 0.15);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-cart-header {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background-color: var(--primary-pink);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            border: 1px solid var(--primary-pink);
+            color: var(--primary-pink);
+            background-color: transparent;
+            padding: 7px 18px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: var(--primary-pink);
+            color: #ffffff;
+        }
+
+        /* === NAVEGACIÓN DE PESTAÑAS PRINCIPALES === */
+        .main-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 16px;
+            background-color: var(--nav-bg-inactive);
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            border-radius: 10px;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background-color: #CBE6ED;
+        }
+
+        .nav-btn.active {
+            background-color: var(--brand-identity) !important;
+            color: var(--white-pure) !important;
+            box-shadow: 0 3px 10px rgba(242, 84, 135, 0.3);
+        }
+
+
+        /* === CONTENEDOR BLANCO PRINCIPAL DE CONTENIDO === */
+        .main-card-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 32px 36px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f1f5f9;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            color: #0f172a;
+            font-size: 1.75rem;
+            margin: 0 0 6px 0;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* === BANNER DE ESTADO DE SUSCRIPCIÓN === */
+        .subscription-status-banner {
+            background: linear-gradient(135deg, #238b8e, #1a6b6e);
+            color: #ffffff;
+            padding: 16px 24px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(35, 139, 142, 0.15);
+        }
+
+        .subscription-status-banner h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .badge-active {
+            background-color: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-left: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* === GRID DE TARJETAS DE PLANES === */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 28px;
+            align-items: stretch;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 18px;
+            padding: 32px 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary-pink);
+            box-shadow: 0 8px 24px rgba(255, 79, 129, 0.15);
+        }
+
+        .badge-popular {
+            position: absolute;
+            top: -14px;
+            right: 24px;
+            background-color: var(--primary-pink);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 79, 129, 0.3);
+        }
+
+        .plan-header h2 {
+            color: #0f172a;
+            margin: 0 0 10px 0;
+            font-size: 1.45rem;
+            font-weight: 700;
+        }
+
+        .plan-price {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 22px;
+        }
+
+        .plan-price span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 28px 0;
+            flex-grow: 1;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            display: flex;
+            align-items: flex-start;
+            color: #334155;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            color: var(--dark-teal);
+            font-weight: 800;
+            margin-right: 12px;
+            font-size: 1rem;
+        }
+
+        .btn-subscribe {
+            width: 100%;
+            background-color: var(--primary-pink);
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(255, 79, 129, 0.2);
+        }
+
+        .btn-subscribe:hover {
+            background-color: var(--primary-pink-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-current-plan {
+            width: 100%;
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            border: 1px solid #e2e8f0;
+            padding: 13px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: not-allowed;
+        }
+
+        /* === MODAL DE PAYPAL === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 32px;
+            border-radius: 20px;
+            max-width: 460px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header Topbar -->
+        <header class="topbar">
+            <div class="brand-container">
+                <img src="static/img/LOGO_KOVA.png" alt="Logo KOVA" style="height: 48px; width: auto; border-radius: 6px;">
+                <span class="brand-badge">SUSCRIPCIONES</span>
+            </div>
+
+            <div class="search-wrapper">
+                <input type="text" class="search-bar" placeholder="Buscar por nombre, tutor, chip, o token NFC rotatorio...">
+            </div>
+
+            <div class="header-actions">
+                <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <!-- Navegación de 5 Pestañas -->
+        <div id="navbar-container"></div>
+
+        <!-- Contenedor Principal Estilizado -->
+        <main class="main-card-container">
+
+            <div class="page-header">
+                <h1>Planes de Suscripción KOVA</h1>
+                <p>Selecciona el plan que mejor se adapte a las necesidades de tus mascotas y veterinaria.</p>
+            </div>
+
+            <!-- Banner del Plan Contratado Actual -->
+            <div class="subscription-status-banner">
+                <div>
+                    <strong>Estado de tu Suscripción:</strong> 
+                    <span id="current-plan-name">Plan Gratuito / Sin Suscripción Activa</span>
+                    <span id="status-badge" class="badge-active" style="display: none;">ACTIVO</span>
+                </div>
+                <div id="subscription-expiration" style="font-size: 0.88rem; opacity: 0.95;"></div>
+            </div>
+
+            <!-- Contenedor de las 3 Tarjetas -->
+            <div class="pricing-grid">
+
+                <!-- 1. PLAN INDIVIDUAL -->
+                <div class="pricing-card" id="card-individual">
+                    <div class="plan-header">
+                        <h2>Plan Individual</h2>
+                        <div class="plan-price">$80 <span>MXN / mes</span></div>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Permite registrar de 1 a 3 mascotas.</li>
+                        <li>Permite descargar el expediente clínico.</li>
+                        <li>Genera 3 imágenes gratuitas en Galería de Efectos.</li>
+                        <li>Rastreo limitado a las 3 mascotas registradas.</li>
+                    </ul>
+                    <div id="action-individual">
+                        <button class="btn-subscribe" onclick="abrirPasarela('Plan Individual', 80)">Suscribirme</button>
+                    </div>
+                </div>
+
+                <!-- 2. PLAN FAMILIAR -->
+                <div class="pricing-card featured" id="card-familiar">
+                    <div class="badge-popular">Más Popular</div>
+                    <div class="plan-header">
+                        <h2>Plan Familiar</h2>
+                        <div class="plan-price">$120 <span>MXN / mes</span></div>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Permite registrar de 4 a 7 mascotas.</li>
+                        <li>Permite descargar el expediente clínico.</li>
+                        <li>Genera 6 imágenes gratuitas en Galería de Efectos.</li>
+                        <li>Rastreo limitado a las 7 mascotas registradas.</li>
+                        <li>Permite compartir información con su veterinario (permiso para 1 persona adicional con costo extra para consultar y agregar datos).</li>
+                    </ul>
+                    <div id="action-familiar">
+                        <button class="btn-subscribe" onclick="abrirPasarela('Plan Familiar', 120)">Suscribirme</button>
+                    </div>
+                </div>
+
+                <!-- 3. PLAN PREMIER -->
+                <div class="pricing-card" id="card-gran-familia">
+                    <div class="plan-header">
+                        <h2>Plan Premier</h2>
+                        <div class="plan-price">$300 <span>MXN / mes</span></div>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Permite registrar de 10 hasta 30 mascotas.</li>
+                        <li>Permite descargar el expediente clínico.</li>
+                        <li>Imágenes ilimitadas en Galería de Efectos por periodo de suscripción.</li>
+                        <li>Rastreo para todas las mascotas registradas.</li>
+                        <li>Permite compartir información con su veterinario (permiso para 1 persona adicional sin costo para consultar y agregar datos).</li>
+                    </ul>
+                    <div id="action-gran-familia">
+                        <button class="btn-subscribe" onclick="abrirPasarela('Plan Premier', 300)">Suscribirme</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Pago de PayPal -->
+    <div class="modal-overlay" id="modal-pago">
+        <div class="modal-content">
+            <button class="close-modal" onclick="cerrarPasarela()">✕</button>
+            <h3 id="modal-plan-title">Completar Suscripción</h3>
+            <p id="modal-plan-price" style="font-weight: 800; font-size: 1.3rem; color: var(--primary-pink); margin: 8px 0 16px 0;"></p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px;">
+                Selecciona tu método de pago para activar tu plan en KOVA:
+            </p>
+            
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+
+    <script>
+        let planSeleccionado = "";
+        let precioSeleccionado = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarSuscripcionActual();
+        });
+
+        // Verificar e ilustrar el plan activo guardado
+        function verificarSuscripcionActual() {
+            const planGuardado = localStorage.getItem('kova_plan_activo');
+            if (planGuardado) {
+                const plan = JSON.parse(planGuardado);
+                document.getElementById('current-plan-name').textContent = plan.nombre + " ($" + plan.precio + " MXN/mes)";
+                document.getElementById('status-badge').style.display = 'inline-block';
+                document.getElementById('subscription-expiration').textContent = "Renovación: " + plan.fecha;
+
+                // Deshabilitar botón del plan contratado
+                if (plan.nombre === 'Plan Individual') {
+                    document.getElementById('action-individual').innerHTML = '<button class="btn-current-plan" disabled>Tu Plan Actual</button>';
+                } else if (plan.nombre === 'Plan Familiar') {
+                    document.getElementById('action-familiar').innerHTML = '<button class="btn-current-plan" disabled>Tu Plan Actual</button>';
+                } else if (plan.nombre === 'Plan Premier' || plan.nombre === 'Plan Gran Familia') {
+                    document.getElementById('action-gran-familia').innerHTML = '<button class="btn-current-plan" disabled>Tu Plan Actual</button>';
+                }
+            }
+        }
+
+        // Mostrar Pasarela
+        function abrirPasarela(nombrePlan, precio) {
+            planSeleccionado = nombrePlan;
+            precioSeleccionado = precio;
+
+            document.getElementById('modal-plan-title').textContent = 'Suscribirse a: ' + nombrePlan;
+            document.getElementById('modal-plan-price').textContent = '$' + precio + ' MXN / mes';
+            document.getElementById('modal-pago').style.display = 'flex';
+
+            // Limpiar botones previos de PayPal
+            document.getElementById('paypal-button-container').innerHTML = '';
+
+            // Renderizar Botones de PayPal
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            description: 'Suscripción KOVA - ' + planSeleccionado,
+                            amount: {
+                                currency_code: 'MXN',
+                                value: precioSeleccionado.toString()
+                            }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        alert('¡Pago completado con éxito por ' + details.payer.name.given_name + '! Tu ' + planSeleccionado + ' ha sido activado.');
+                        
+                        // Guardar información del plan en el cliente
+                        const fechaExp = new Date();
+                        fechaExp.setMonth(fechaExp.getMonth() + 1);
+
+                        const planInfo = {
+                            nombre: planSeleccionado,
+                            precio: precioSeleccionado,
+                            fecha: fechaExp.toLocaleDateString()
+                        };
+                        localStorage.setItem('kova_plan_activo', JSON.stringify(planInfo));
+
+                        cerrarPasarela();
+                        location.reload();
+                    });
+                },
+                onError: function(err) {
+                    console.error("Error en el pago con PayPal:", err);
+                    alert("Ocurrió un error al procesar el pago. Por favor intenta de nuevo.");
+                }
+            }).render('#paypal-button-container');
+        }
+
+        function cerrarPasarela() {
+            document.getElementById('modal-pago').style.display = 'none';
+        }
+
+        // Carga y resalta proporcionalmente la barra de navegación de 4 pestañas
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'kova_usuarios.html';
+
+        const navHTML = `
+        <nav class="main-navigation">
+            <a href="/usuarios" class="nav-btn ${currentPage === 'kova_usuarios.html' ? 'active' : ''}">Expediente 360°</a>
+            <a href="/mapa" class="nav-btn ${currentPage === 'mapa.html' ? 'active' : ''}">Mapa & Geocercas</a>
+            <a href="/galeria" class="nav-btn ${currentPage === 'galeria.html' ? 'active' : ''}">Galería de Efectos</a>
+            <a href="/catalogo" class="nav-btn ${currentPage === 'catalogo.html' ? 'active' : ''}">Productos y Servicios</a>
+            <a href="/suscripciones" class="nav-btn ${currentPage === 'suscripciones.html' ? 'active' : ''}">Suscripciones</a>
+        </nav>
+        `;
+
+        const navContainer = document.getElementById('navbar-container');
+        if (navContainer) {
+            navContainer.innerHTML = navHTML;
+        }
+    });
+
+        function cerrarSesion() {
+            localStorage.removeItem('kova_current_user');
+            alert("Has cerrado sesión exitosamente.");
+            window.location.href = "/login";
+        }
+
+        function toggleCarrito() {
+            alert("Redirigiendo a tu carrito...");
+        }
+    </script>
+</body>
+</html>

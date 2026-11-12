@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA 2026 - Panel de Vendedor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-accent: #008BA3;        
+            --brand-identity: #F25487;        
+            --soft-pink: #FDECF0;             
+            --bg-gradient-turq: #EBF7FA;      
+            --body-text: #4A5568;             
+            --white-pure: #FFFFFF;            
+            --border-color: #CBD5E1;          
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: var(--bg-gradient-turq); padding: 20px; color: var(--body-text); }
+        .topbar { display: flex; justify-content: space-between; align-items: center; background: var(--white-pure); padding: 10px 24px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .brand-badge { background-color: var(--soft-pink); color: var(--brand-identity); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .btn-logout { border: 1.5px solid var(--brand-identity); color: var(--brand-identity); background: transparent; padding: 6px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        
+        .main-container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 25px; }
+        .card { background: var(--white-pure); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .btn-kova { background-color: var(--brand-identity); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; }
+        
+        .imagenes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+        .img-slot { border: 2px dashed var(--border-color); height: 80px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; text-align: center; cursor: pointer; position: relative; overflow: hidden; background-color: #fafafa; }
+        .img-slot input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+        .img-slot span { pointer-events: none; z-index: 1; color: #666; }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="static/img/LOGO_KOVA.png" alt="Logo" style="height: 40px;">
+            <span class="brand-badge">Vendedor de productos</span>
+        </div>
+        <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+    </header>
+
+    <h2 id="saludo-vendedor" style="margin-top: 20px; color: var(--primary-accent);">Hola, Bienvenido</h2>
+
+    <div class="main-container">
+        <div class="card">
+            <h3>Productos Agregados</h3>
+            <div id="lista-resumida" style="margin-top: 15px; font-size: 0.9rem;">No hay productos registrados aún.</div>
+            <button class="btn-kova" onclick="abrirModalRegistro()">Registrar producto</button>
+        </div>
+
+        <div class="card">
+            <h3>Mis productos (Gestión e Inventario)</h3>
+            <div id="lista-detallada" style="margin-top: 15px;">No hay ningún producto en la lista.</div>
+        </div>
+    </div>
+
+    <!-- Modal Registrar Producto -->
+    <div id="modal-producto" class="modal">
+        <div class="modal-content">
+            <h3>Agregar producto</h3>
+            <form id="form-producto" onsubmit="guardarProducto(event)" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label>Nombre del producto</label>
+                    <input type="text" id="nombre_producto" name="nombre_producto" required placeholder="Nombre del producto">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="3" required placeholder="Detalles, caducidad, etc."></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Precio (MXN)</label>
+                        <input type="number" step="0.01" id="precio" name="precio" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad (Stock)</label>
+                        <input type="number" id="cantidad" name="cantidad" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Adjunta mínimo 5 imágenes</label>
+                    <div class="imagenes-grid">
+                        <div class="img-slot" id="slot-1"><span>Img 1</span><input type="file" name="imagen_1" accept="image/*" onchange="previewSlot(this, 1)"></div>
+                        <div class="img-slot" id="slot-2"><span>Img 2</span><input type="file" name="imagen_2" accept="image/*" onchange="previewSlot(this, 2)"></div>
+                        <div class="img-slot" id="slot-3"><span>Img 3</span><input type="file" name="imagen_3" accept="image/*" onchange="previewSlot(this, 3)"></div>
+                        <div class="img-slot" id="slot-4"><span>Img 4</span><input type="file" name="imagen_4" accept="image/*" onchange="previewSlot(this, 4)"></div>
+                        <div class="img-slot" id="slot-5"><span>Img 5</span><input type="file" name="imagen_5" accept="image/*" onchange="previewSlot(this, 5)"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del proveedor</label>
+                    <input type="text" id="nombre_proveedor" name="nombre_proveedor">
+                </div>
+                <div class="form-group">
+                    <label>Contacto del proveedor</label>
+                    <input type="text" id="contacto_proveedor" name="contacto_proveedor">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-kova" style="flex: 1; margin:0;">Guardar</button>
+                    <button type="button" onclick="cerrarModalRegistro()" class="btn-kova" style="flex: 1; margin:0; background: var(--border-color); color: var(--body-text);">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Producto -->
+    <div id="modal-editar" class="modal">
+        <div class="modal-content">
+            <h3>Editar producto e inventario</h3>
+            <form id="form-editar" onsubmit="actualizarProducto(event)" style="margin-top: 15px;">
+                <input type="hidden" id="edit_id_producto">
+                <div class="form-group">
+                    <label>Nombre del producto</label>
+                    <input type="text" id="edit_nombre" name="nombre_producto" required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="edit_descripcion" name="descripcion" rows="3" required></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Precio (MXN)</label>
+                        <input type="number" step="0.01" id="edit_precio" name="precio" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad (Stock)</label>
+                        <input type="number" id="edit_cantidad" name="cantidad" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Actualizar imágenes (Opcional)</label>
+                    <div class="imagenes-grid">
+                        <div class="img-slot" id="edit-slot-1"><span>Img 1</span><input type="file" name="imagen_1" accept="image/*" onchange="previewEditSlot(this, 1)"></div>
+                        <div class="img-slot" id="edit-slot-2"><span>Img 2</span><input type="file" name="imagen_2" accept="image/*" onchange="previewEditSlot(this, 2)"></div>
+                        <div class="img-slot" id="edit-slot-3"><span>Img 3</span><input type="file" name="imagen_3" accept="image/*" onchange="previewEditSlot(this, 3)"></div>
+                        <div class="img-slot" id="edit-slot-4"><span>Img 4</span><input type="file" name="imagen_4" accept="image/*" onchange="previewEditSlot(this, 4)"></div>
+                        <div class="img-slot" id="edit-slot-5"><span>Img 5</span><input type="file" name="imagen_5" accept="image/*" onchange="previewEditSlot(this, 5)"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del proveedor</label>
+                    <input type="text" id="edit_nombre_proveedor" name="nombre_proveedor">
+                </div>
+                <div class="form-group">
+                    <label>Contacto del proveedor</label>
+                    <input type="text" id="edit_contacto_proveedor" name="contacto_proveedor">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-kova" style="flex: 1; margin:0;">Actualizar Cambios</button>
+                    <button type="button" onclick="cerrarModalEdicion()" class="btn-kova" style="flex: 1; margin:0; background: var(--border-color); color: var(--body-text);">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '';
+        let usuarioActual = null;
+        let productosGlobales = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            usuarioActual = JSON.parse(localStorage.getItem('kova_current_user') || '{}');
+            if(!usuarioActual.id_usuario) {
+                window.location.href = 'index.html';
+                return;
+            }
+            if(usuarioActual.nombre_completo) {
+                document.getElementById('saludo-vendedor').textContent = `Hola, "${usuarioActual.nombre_completo}", Bienvenid@`;
+            }
+            cargarProductos();
+        });
+
+        function abrirModalRegistro() { document.getElementById('modal-producto').style.display = 'flex'; }
+        function cerrarModalRegistro() { document.getElementById('modal-producto').style.display = 'none'; }
+        function cerrarModalEdicion() { document.getElementById('modal-editar').style.display = 'none'; }
+
+        function previewSlot(input, num) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let slot = document.getElementById(`slot-${num}`);
+                    slot.style.backgroundImage = `url(${e.target.result})`;
+                    slot.style.backgroundSize = 'cover';
+                    slot.style.backgroundPosition = 'center';
+                    let span = slot.querySelector('span');
+                    if(span) span.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewEditSlot(input, num) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let slot = document.getElementById(`edit-slot-${num}`);
+                    slot.style.backgroundImage = `url(${e.target.result})`;
+                    slot.style.backgroundSize = 'cover';
+                    slot.style.backgroundPosition = 'center';
+                    let span = slot.querySelector('span');
+                    if(span) span.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function guardarProducto(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('form-producto'));
+            formData.append('id_vendedor', usuarioActual.id_usuario);
+
+            fetch(`${API_URL}/api/registrar_producto`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    alert("¡Producto registrado con éxito!");
+                    cerrarModalRegistro();
+                    document.getElementById('form-producto').reset();
+                    for(let i=1; i<=5; i++) {
+                        let slot = document.getElementById(`slot-${i}`);
+                        slot.style.backgroundImage = '';
+                        let span = slot.querySelector('span');
+                        if(span) span.style.display = 'block';
+                    }
+                    cargarProductos();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+        }
+
+        async function cargarProductos() {
+            try {
+                const res = await fetch(`${API_URL}/api/productos_vendedor/${usuarioActual.id_usuario}`);
+                const respuesta = await res.json();
+                
+                // CORRECCIÓN: El backend devuelve los productos dentro de la propiedad "data"
+                productosGlobales = respuesta.data || respuesta.productos || respuesta || [];
+                
+                const lista = document.getElementById('lista-resumida'); 
+                const detalle = document.getElementById('lista-detallada'); 
+                
+                if (!Array.isArray(productosGlobales) || productosGlobales.length === 0) {
+                    lista.innerHTML = '<div style="margin-top: 15px; font-size: 0.9rem;">No hay productos registrados aún.</div>';
+                    detalle.innerHTML = '<div style="margin-top: 15px;">No hay ningún producto en la lista.</div>';
+                    return;
+                }
+
+                lista.innerHTML = '';
+                productosGlobales.forEach((prod, index) => {
+                    const item = document.createElement('div');
+                    item.style = 'padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.3s; font-weight: 500;';
+                    item.onmouseover = () => { item.style.backgroundColor = 'var(--soft-pink)'; item.style.color = 'var(--brand-identity)'; };
+                    item.onmouseout = () => { item.style.backgroundColor = 'transparent'; item.style.color = 'var(--body-text)'; };
+                    item.innerText = `${index + 1}. ${prod.nombre_producto}`;
+                    item.onclick = () => mostrarDetalleProducto(prod);
+                    lista.appendChild(item);
+                });
+
+                // Mostrar automáticamente el primer producto
+                if (productosGlobales.length > 0) {
+                    mostrarDetalleProducto(productosGlobales[0]);
+                }
+            } catch (e) { 
+                console.error("Error cargando productos:", e); 
+            }
+        }
+        function mostrarDetalleProducto(prod) {
+            const detalle = document.getElementById('lista-detallada');
+            
+            // Recopilar imágenes disponibles (asumiendo que tu backend las guarda como imagen_1, imagen_2, etc. o imagen1, imagen2)
+            let imgHtml = '';
+            const imgKeys = ['imagen_1', 'imagen_2', 'imagen_3', 'imagen_4', 'imagen_5', 'imagen1', 'imagen2'];
+            imgKeys.forEach(key => {
+                if (prod[key]) {
+                    imgHtml += `<img src="${API_URL}/static/uploads/${prod[key]}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; border:1px solid #eee;">`;
+                }
+            });
+
+            detalle.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border-color); padding-bottom:15px; margin-bottom:15px;">
+                    <div>
+                        <h2 style="margin:0; color:var(--primary-accent);">${prod.nombre_producto}</h2>
+                        <h3 style="margin:5px 0 0 0; color:var(--brand-identity);">$${prod.precio} MXN</h3>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-logout" style="background:#17a2b8; color:white; border:none; padding:8px 12px;" onclick='abrirEditar(${prod.id_producto || prod.id})'>✎ Editar</button>
+                        <button class="btn-logout" style="background:#dc3545; color:white; border:none; padding:8px 12px;" onclick="eliminarProducto(${prod.id_producto || prod.id})">🗑 Eliminar</button>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div>
+                        <p style="margin-bottom:10px;"><strong>Descripción:</strong><br>${prod.descripcion}</p>
+                        <p style="margin-bottom:10px;"><strong>Stock disponible:</strong> ${prod.cantidad || prod.stock} piezas</p>
+                    </div>
+                    <div>
+                        ${prod.nombre_proveedor ? `<p style="margin-bottom:10px;"><strong>Proveedor:</strong> ${prod.nombre_proveedor}</p>` : ''}
+                        ${prod.contacto_proveedor ? `<p style="margin-bottom:10px;"><strong>Contacto:</strong> ${prod.contacto_proveedor}</p>` : ''}
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                    ${imgHtml}
+                </div>
+            `;
+        }
+
+        function abrirEditar(idProducto) {
+            let p = productosGlobales.find(item => (item.id_producto === idProducto || item.id === idProducto));
+            if(!p) return;
+
+            document.getElementById('edit_id_producto').value = p.id_producto || p.id;
+            document.getElementById('edit_nombre').value = p.nombre_producto;
+            document.getElementById('edit_descripcion').value = p.descripcion;
+            document.getElementById('edit_precio').value = p.precio;
+            document.getElementById('edit_cantidad').value = p.cantidad || p.stock;
+            document.getElementById('edit_nombre_proveedor').value = p.nombre_proveedor || '';
+            document.getElementById('edit_contacto_proveedor').value = p.contacto_proveedor || '';
+
+            for(let i=1; i<=5; i++) {
+                let slot = document.getElementById(`edit-slot-${i}`);
+                slot.style.backgroundImage = '';
+                let span = slot.querySelector('span');
+                if(span) span.style.display = 'block';
+            }
+
+            document.getElementById('modal-editar').style.display = 'flex';
+        }
+
+        function actualizarProducto(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit_id_producto').value;
+            const formData = new FormData(document.getElementById('form-editar'));
+
+            fetch(`${API_URL}/api/actualizar_producto/${id}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success' || data.success) {
+                    alert("¡Producto actualizado correctamente!");
+                    cerrarModalEdicion();
+                    cargarProductos();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+        }
+
+        function eliminarProducto(idProducto) {
+            if(confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+                fetch(`${API_URL}/api/eliminar_producto/${idProducto}`, {
+                    method: 'DELETE'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'success' || data.success) {
+                        alert("Producto eliminado exitosamente.");
+                        cargarProductos();
+                    } else {
+                        alert("Error al eliminar: " + data.message);
+                    }
+                });
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA 2026 - Galería de Efectos con IA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-accent: #008BA3;        
+            --primary-accent-hover: #006F82;  
+            --primary-text: #0E2A47;          
+            --brand-identity: #F25487;        
+            --brand-identity-hover: #D83C6F;  
+            --soft-pink: #FDECF0;             
+            --secondary-accent: #5E5CE6;      
+            --bg-gradient-turq: #EBF7FA;      
+            --body-text: #4A5568;             
+            --white-pure: #FFFFFF;            
+            --border-color: #CBD5E1;          
+            --nav-bg-inactive: #DFF0F4;       
+            --success-color: #10B981;         
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        body {
+            background-color: var(--bg-gradient-turq);
+            margin: 0;
+            padding: 16px 20px;
+            color: var(--body-text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--white-pure); padding: 10px 24px;
+            border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(14, 42, 71, 0.05);
+        }
+
+        .brand-container { display: flex; align-items: center; gap: 12px; }
+        .brand-badge { background-color: var(--soft-pink); color: var(--brand-identity); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+
+        .search-wrapper { flex: 0 1 550px; }
+        .search-bar { width: 100%; padding: 9px 20px; border: 1px solid var(--border-color); border-radius: 24px; outline: none; font-size: 0.88rem; background: var(--white-pure); }
+
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        .btn-cart-header { background: transparent; border: none; cursor: pointer; position: relative; font-size: 1.3rem; color: var(--primary-text); }
+        .cart-badge { position: absolute; top: -4px; right: -6px; background-color: var(--brand-identity); color: var(--white-pure); font-size: 0.7rem; font-weight: 700; border-radius: 50%; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; }
+        .btn-logout { border: 1.5px solid var(--brand-identity); color: var(--brand-identity); background-color: transparent; padding: 6px 18px; border-radius: 10px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background-color: var(--brand-identity); color: var(--white-pure); }
+
+        .main-navigation { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .nav-btn { flex: 1; text-align: center; padding: 10px 16px; background-color: var(--nav-bg-inactive); color: var(--primary-text); text-decoration: none; font-weight: 700; font-size: 0.88rem; border-radius: 10px; border: none; cursor: pointer; }
+        .nav-btn.active { background-color: var(--brand-identity) !important; color: var(--white-pure) !important; box-shadow: 0 3px 10px rgba(242, 84, 135, 0.3); }
+
+        .galeria-container { background: var(--white-pure); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(14, 42, 71, 0.04); flex: 1; }
+        .seccion-titulo { font-size: 1.4rem; font-weight: 800; color: var(--primary-text); margin-bottom: 4px; }
+        .seccion-subtitulo { font-size: 0.88rem; color: var(--body-text); margin-bottom: 24px; }
+
+        .selector-mascota-box {
+            background: var(--bg-gradient-turq);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(0, 139, 163, 0.2);
+        }
+
+        /* --- CUADRÍCULA DE EFECTOS --- */
+        .efectos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .efecto-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+        .efecto-card:hover { transform: translateY(-3px); }
+
+        .efecto-img-top {
+            background: var(--primary-text);
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .efecto-img-top span { color: white; font-weight: 700; font-size: 0.9rem; padding: 10px; text-align: center; position: absolute; }
+
+        .efecto-body { padding: 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .efecto-title { font-size: 0.92rem; font-weight: 800; color: var(--primary-text); margin-bottom: 6px; }
+        .efecto-desc { font-size: 0.78rem; color: var(--body-text); margin-bottom: 14px; line-height: 1.3; }
+
+        .btn-efecto {
+            width: 100%;
+            padding: 9px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: none;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-generar { background-color: var(--primary-accent); color: white; }
+        .btn-generar:hover { background-color: var(--primary-accent-hover); }
+        .btn-perfil { background-color: var(--brand-identity); color: white; }
+        .btn-perfil:hover { background-color: var(--brand-identity-hover); }
+
+        /* --- SECCIÓN MIS CREACIONES --- */
+        .mis-creaciones { margin-top: 30px; border-top: 2px solid var(--border-color); padding-top: 20px; }
+        .grid-resultados { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 15px; }
+        .resultado-card { border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
+        .resultado-card:hover { transform: scale(1.02); }
+        .resultado-card img, .resultado-card video { width: 100%; height: 140px; object-fit: cover; display: block; }
+        .resultado-info { padding: 10px; }
+
+        /* --- MODALES --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(14, 42, 71, 0.7); backdrop-filter: blur(4px); justify-content: center; align-items: center; }
+        .modal-content { background: var(--white-pure); padding: 25px; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,42,71,0.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: var(--primary-text); }
+        .form-group select, .form-group input { width: 100%; padding: 9px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; }
+    </style>
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="brand-container">
+            <img src="static/img/LOGO_KOVA.png" alt="Logo KOVA" style="height: 48px;">
+            <span class="brand-badge">GALERÍA DE EFECTOS</span>
+        </div>
+        <div class="search-wrapper">
+            <input type="text" class="search-bar" placeholder="Buscar por nombre, tutor, chip...">
+        </div>
+        <div class="header-actions">
+            <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div id="navbar-container"></div>
+
+    <main class="galeria-container">
+        <h1 class="seccion-titulo">Editor de fotos con IA para tu familiar</h1>
+        <p class="seccion-subtitulo">Aplica un efecto generativo sobre la imagen real de tu integrante y guárdala directamente en su perfil.</p>
+
+        <!-- Selector global de mascota para filtrar la galería -->
+        <div class="selector-mascota-box">
+            <label style="font-weight: 700; color: var(--primary-text);">Viendo galería del integrante de la familia:</label>
+            <select id="select-mascota-principal" class="pet-select" onchange="cambiarMascotaPrincipal(this.value)" style="padding: 8px 14px; border-radius: 8px; border: 1.5px solid var(--primary-accent); font-weight: 700; background: white; color: var(--primary-text);"></select>
+        </div>
+
+        <!-- Cuadrícula de Efectos Disponibles -->
+        <div class="efectos-grid">
+            <div class="efecto-card">
+                <div class="efecto-img-top" style="background: linear-gradient(135deg, #008BA3, #0E2A47);">
+                    <span>Verano Caribeño</span>
+                </div>
+                <div class="efecto-body">
+                    <div>
+                        <div class="efecto-title">Verano Caribeño en Doña Rosa</div>
+                        <div class="efecto-desc">Efecto tropical de verano en la playa con flotador de dona.</div>
+                    </div>
+                    <button class="btn-efecto btn-generar" onclick="abrirModalGenerar('playa_verano', 'Verano Caribeño en Doña Rosa', 'Efecto tropical de verano en la playa con flotador de dona.')">✨ Generar Efecto con IA</button>
+                </div>
+            </div>
+
+            <div class="efecto-card">
+                <div class="efecto-img-top" style="background: linear-gradient(135deg, #5E5CE6, #0E2A47);">
+                    <span>Bambí Zen</span>
+                </div>
+                <div class="efecto-body">
+                    <div>
+                        <div class="efecto-title">Bambí Zen - Kimono & Abanico</div>
+                        <div class="efecto-desc">Atuendo de gala imperial oriental con seda y detalles dorados.</div>
+                    </div>
+                    <button class="btn-efecto btn-generar" onclick="abrirModalGenerar('kimono_bambi', 'Bambí Zen - Kimono & Abanico', 'Atuendo de gala imperial oriental con seda y detalles dorados.')">✨ Generar Efecto con IA</button>
+                </div>
+            </div>
+
+            <div class="efecto-card">
+                <div class="efecto-img-top" style="background: linear-gradient(135deg, #F25487, #0E2A47);">
+                    <span>Festival Nocturno</span>
+                </div>
+                <div class="efecto-body">
+                    <div>
+                        <div class="efecto-title">Festival Nocturno de Cerezos</div>
+                        <div class="efecto-desc">Paseo nocturno iluminado con linternas y flores de cerezo.</div>
+                    </div>
+                    <button class="btn-efecto btn-generar" onclick="abrirModalGenerar('festival_cerezo', 'Festival Nocturno de Cerezos', 'Paseo nocturno iluminado con linternas y flores de cerezo.')">✨ Generar Efecto con IA</button>
+                </div>
+            </div>
+
+            <div class="efecto-card">
+                <div class="efecto-img-top" style="background: linear-gradient(135deg, #10B981, #0E2A47);">
+                    <span>Orgullo Tricolor</span>
+                </div>
+                <div class="efecto-body">
+                    <div>
+                        <div class="efecto-title">Orgullo Tricolor - Camiseta México</div>
+                        <div class="efecto-desc">Apoyando al equipo en el estadio con camiseta deportiva.</div>
+                    </div>
+                    <button class="btn-efecto btn-generar" onclick="abrirModalGenerar('camiseta_mexico', 'Orgullo Tricolor - Camiseta México', 'Apoyando al equipo en el estadio con camiseta deportiva.')">✨ Generar Efecto con IA</button>
+                </div>
+            </div>
+
+            <div class="efecto-card">
+                <div class="efecto-img-top" style="background: linear-gradient(135deg, #F59E0B, #0E2A47);">
+                    <span>Animación Facial</span>
+                </div>
+                <div class="efecto-body">
+                    <div>
+                        <div class="efecto-title">Animación Facial (Video IA)</div>
+                        <div class="efecto-desc">Genera un video animado estilo cinematográfico con IA propia.</div>
+                    </div>
+                    <button class="btn-efecto btn-generar" onclick="abrirModalGenerar('video_animado', 'Animación Facial Cinematográfica', 'Genera un video animado estilo cinematográfico con IA propia.')">🎥 Generar Video con IA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Creaciones Previas -->
+        <div class="mis-creaciones">
+            <h2 class="seccion-titulo" style="font-size: 1.2rem;">Mis Creaciones y Galería Guardada</h2>
+            <div class="grid-resultados" id="grid-resultados-ia"></div>
+        </div>
+    </main>
+
+    <!-- Modal para subir foto y aplicar efecto -->
+    <div id="modal-generar" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-titulo-efecto" style="font-size: 1rem; color: var(--primary-text);">Generar Efecto</h3>
+                <button class="close-btn" onclick="cerrarModalGenerar()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Seleccionar Mascota de la Familia:</label>
+                <select id="modal-select-mascota" class="pet-select"></select>
+            </div>
+            <div class="form-group">
+                <label>Subir Fotografía de la Mascota:</label>
+                <input type="file" id="modal-file-input" accept="image/*,video/*">
+            </div>
+            <div id="modal-loading" style="display:none; text-align:center; margin: 15px 0;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary-accent);"></i>
+                <p style="font-size: 0.85rem; margin-top: 5px;">Procesando imagen con KOVA-IA...</p>
+            </div>
+            <button class="btn-efecto btn-generar" onclick="ejecutarProcesoIA()" style="padding: 12px; margin-top: 10px;">Ejecutar y Guardar</button>
+        </div>
+    </div>
+
+    <!-- Modal Visor de Imagen Creada (Con opciones de Descarga, Perfil y Cerrar) -->
+    <div id="modal-visor" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <h3 id="visor-titulo" style="font-size: 1rem; color: var(--primary-text);">Detalle de Creación</h3>
+                <button class="close-btn" onclick="cerrarModalVisor()">&times;</button>
+            </div>
+            <div id="visor-media-container" style="margin: 15px 0; max-height: 300px; overflow: hidden; display: flex; justify-content: center;"></div>
+            <p id="visor-descripcion" style="font-size: 0.82rem; color: var(--body-text); margin-bottom: 15px;"></p>
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+                <a id="visor-btn-descargar" download class="btn-efecto btn-generar" style="text-decoration:none;"><i class="fas fa-download"></i> Descargar Imagen / Archivo</a>
+                <button class="btn-efecto btn-perfil" onclick="abrirModalPerfilDesdeVisor()"><i class="fas fa-user-circle"></i> Poner como Foto de Perfil</button>
+                <button class="btn-efecto" onclick="cerrarModalVisor()" style="background: var(--border-color); color: var(--primary-text);">Cerrar Ventana</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para asignar Foto de Perfil -->
+    <div id="modal-perfil" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <h3>¿A qué mascota asignar foto de perfil?</h3>
+                <button class="close-btn" onclick="cerrarModalPerfil()">&times;</button>
+            </div>
+            <div id="lista-mascotas-modal" style="margin: 15px 0;"></div>
+            <button class="btn-efecto" onclick="cerrarModalPerfil()" style="background: var(--border-color); color: var(--primary-text);">Cancelar</button>
+        </div>
+    </div>
+
+    <footer> • Solución KOVA 2026 • </footer>
+
+    <script>
+        let efectoSeleccionadoKey = '';
+        let efectoDescripcionTexto = '';
+        let listaMascotasGlobal = [];
+        let archivoActualVisor = '';
+        let mascotaIdActual = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('navbar-container').innerHTML = `
+                <nav class="main-navigation">
+                    <a href="/usuarios" class="nav-btn">Expediente 360°</a>
+                    <a href="/mapa" class="nav-btn">Mapa & Geocercas</a>
+                    <a href="/galeria" class="nav-btn active">Galería de Efectos</a>
+                    <a href="/catalogo" class="nav-btn">Productos y Servicios</a>
+                    <a href="/suscripciones" class="nav-btn">Suscripciones</a>
+                </nav>
+            `;
+            cargarMascotasUsuario();
+        });
+
+        function cargarMascotasUsuario() {
+            const storedUser = JSON.parse(localStorage.getItem('kova_current_user') || localStorage.getItem('user') || '{}');
+            const usuarioId = storedUser.id_usuario || storedUser.id;
+            
+            if (!usuarioId) {
+                console.warn("No se encontró usuario activo en localStorage.");
+                return;
+            }
+
+            fetch(`http://127.0.0.1:5000/api/mascotas/${usuarioId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success' && data.mascotas.length > 0) {
+                        listaMascotasGlobal = data.mascotas;
+                        poblarSelectoresMascota();
+                        // Seleccionar la primera mascota por defecto para la galería principal
+                        mascotaIdActual = data.mascotas[0].id_mascota;
+                        cargarGaleriaMascota(mascotaIdActual);
+                    }
+                })
+                .catch(err => console.error("Error al cargar mascotas:", err));
+        }
+
+        function poblarSelectoresMascota() {
+            const selectPrincipal = document.getElementById('select-mascota-principal');
+            const selectModal = document.getElementById('modal-select-mascota');
+            
+            selectPrincipal.innerHTML = '';
+            selectModal.innerHTML = '';
+
+            listaMascotasGlobal.forEach(m => {
+                let opt1 = document.createElement('option');
+                opt1.value = m.id_mascota;
+                opt1.textContent = m.nombre_mascota;
+                selectPrincipal.appendChild(opt1);
+
+                let opt2 = document.createElement('option');
+                opt2.value = m.id_mascota;
+                opt2.textContent = m.nombre_mascota;
+                selectModal.appendChild(opt2);
+            });
+        }
+
+        function cambiarMascotaPrincipal(idMascota) {
+            mascotaIdActual = idMascota;
+            cargarGaleriaMascota(idMascota);
+        }
+
+        function abrirModalGenerar(efectoKey, efectoNombre, efectoDesc) {
+            efectoSeleccionadoKey = efectoKey;
+            efectoDescripcionTexto = efectoDesc;
+            document.getElementById('modal-titulo-efecto').textContent = `Aplicar: ${efectoNombre}`;
+            document.getElementById('modal-file-input').value = '';
+            document.getElementById('modal-loading').style.display = 'none';
+            // Sincronizar select del modal con la mascota actualmente vista
+            if(mascotaIdActual) {
+                document.getElementById('modal-select-mascota').value = mascotaIdActual;
+            }
+            document.getElementById('modal-generar').style.display = 'flex';
+        }
+
+        function cerrarModalGenerar() {
+            document.getElementById('modal-generar').style.display = 'none';
+        }
+
+        function ejecutarProcesoIA() {
+            const mascotaId = document.getElementById('modal-select-mascota').value;
+            const fileInput = document.getElementById('modal-file-input');
+
+            if (!fileInput.files[0]) {
+                alert("Por favor, selecciona una imagen o video de tu mascota.");
+                return;
+            }
+
+            document.getElementById('modal-loading').style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('imagen', fileInput.files[0]);
+            formData.append('id_mascota', mascotaId);
+            formData.append('efecto', efectoSeleccionadoKey);
+            formData.append('descripcion', efectoDescripcionTexto); // Enviar descripción a la BD
+
+            fetch('http://127.0.0.1:5000/api/subir_y_procesar_ia', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('modal-loading').style.display = 'none';
+                if (data.status === 'success') {
+                    alert("¡Efecto generado con éxito!");
+                    cerrarModalGenerar();
+                    cambiarMascotaPrincipal(mascotaId); // Actualizar vista a la mascota procesada
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(err => {
+                document.getElementById('modal-loading').style.display = 'none';
+                console.error(err);
+            });
+        }
+
+        function cargarGaleriaMascota(mascotaId) {
+            fetch(`http://127.0.0.1:5000/api/galeria/${mascotaId}`)
+            .then(res => res.json())
+            .then(data => {
+                const grid = document.getElementById('grid-resultados-ia');
+                grid.innerHTML = '';
+                if (data.status === 'success' && data.galeria.length > 0) {
+                    data.galeria.forEach(item => {
+                        let mediaTag = item.tipo_archivo === 'imagen' 
+                            ? `<img src="/static/generados/${item.nombre_archivo}" alt="Creación IA">`
+                            : `<video src="/static/generados/${item.nombre_archivo}" controls></video>`;
+
+                        let card = document.createElement('div');
+                        card.className = 'resultado-card';
+                        card.onclick = () => abrirModalVisor(item.nombre_archivo, item.titulo_efecto, item.descripcion_efecto, item.tipo_archivo);
+                        card.innerHTML = `
+                            ${mediaTag}
+                            <div class="resultado-info">
+                                <div style="font-weight: 700; font-size: 0.82rem; color: var(--primary-text);">${item.titulo_efecto.replace('_',' ').toUpperCase()}</div>
+                                <div style="font-size: 0.75rem; color: var(--body-text); margin-top: 2px;">${item.descripcion_efecto || ''}</div>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:15px; font-size:0.85rem;">No hay creaciones guardadas todavía para esta mascota.</p>';
+                }
+            });
+        }
+
+        // --- VISOR DE IMAGEN CREADA ---
+        function abrirModalVisor(nombreArchivo, titulo, descripcion, tipo) {
+            archivoActualVisor = nombreArchivo;
+            document.getElementById('visor-titulo').textContent = titulo.replace('_', ' ').toUpperCase();
+            document.getElementById('visor-descripcion').textContent = descripcion || '';
+            
+            const container = document.getElementById('visor-media-container');
+            container.innerHTML = tipo === 'imagen' 
+                ? `<img src="/static/generados/${nombreArchivo}" style="max-height: 250px; max-width: 100%; border-radius: 8px;">`
+                : `<video src="/static/generados/${nombreArchivo}" controls style="max-height: 250px; max-width: 100%; border-radius: 8px;"></video>`;
+
+            document.getElementById('visor-btn-descargar').href = `/static/generados/${nombreArchivo}`;
+            document.getElementById('modal-visor').style.display = 'flex';
+        }
+
+        function cerrarModalVisor() {
+            document.getElementById('modal-visor').style.display = 'none';
+        }
+
+        function abrirModalPerfilDesdeVisor() {
+            cerrarModalVisor();
+            const modal = document.getElementById('modal-perfil');
+            const listaModal = document.getElementById('lista-mascotas-modal');
+            listaModal.innerHTML = '';
+
+            listaMascotasGlobal.forEach(m => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-efecto btn-perfil';
+                btn.style.margin = '5px 0';
+                btn.textContent = m.nombre_mascota;
+                btn.onclick = () => asignarFotoPerfil(m.id_mascota, m.nombre_mascota);
+                listaModal.appendChild(btn);
+            });
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModalPerfil() {
+            document.getElementById('modal-perfil').style.display = 'none';
+        }
+
+        function asignarFotoPerfil(mascotaId, nombreMascota) {
+            fetch('http://127.0.0.1:5000/api/actualizar_foto_perfil_ia', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_mascota: mascotaId, nombre_archivo: archivoActualVisor })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(`¡Foto de perfil actualizada exitosamente para ${nombreMascota}!`);
+                    cerrarModalPerfil();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            });
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('kova_current_user');
+            alert("Has cerrado sesión exitosamente.");
+            window.location.href = "/login";
+        }
+
+    </script>
+</body>
+</html>

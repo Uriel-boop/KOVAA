@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA - Ecosistema Digital</title>
+    <link rel="stylesheet" href="../static/css/style_p1.css">
+</head>
+<body>
+    <!-- Barra de Navegación -->
+    <header class="navbar">
+        <div class="logo-container">
+            <!-- Reemplaza el src con la ruta de tu logo -->
+            <img src="../static/img/LOGO_KOVA.png" alt="KOVA Logo" class="logo">
+            <span class="logo-text">Tecnología • Bienestar • Comunidad</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="#">Contacto</a>
+        </nav>
+        
+
+        <!-- En pagina_central.html -->
+        <a href="/login" class="btn-login">Iniciar sesión</a>
+    </header>
+
+    <!-- Sección Hero (Principal) -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge">KOVA | Ecosistema Digital</span>
+            <h1>KOVA - Ecosistema Digital para el Bienestar y la Unidad de Negocio de los Chihuahuas</h1>
+            <p>Un ecosistema digital integral diseñado para mejorar la calidad de vida de los chihuahuas y fortalecer la comunidad que los ama.</p>
+            <div class="hero-buttons">
+                <button class="btn-primary">Explorar Ecosistema →</button>
+                <button class="btn-secondary">▶ Conoce más</button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <!-- Reemplaza con la imagen principal del chihuahua con playera verde -->
+            <img src="../static/img/IMG_13.jpeg" alt="Chihuahua principal">
+        </div>
+    </section>
+
+    <!-- Sección de Tarjetas Interactivas -->
+    <section class="features">
+        <div class="card" onclick="mostrarInfo('iot')">
+            <div class="icon">📍</div>
+            <h3>Locación IoT</h3>
+            <p>Lanzamos la tecnología de IoT Location tracking que monitorea la ubicación y bienestar de tu chihuahua.</p>
+            <button class="btn-card">Descubrir más ></button>
+            <div class="extra-info" id="info-iot">
+                <!-- Información oculta que se mostrará al hacer clic -->
+                <p>Monitoreo en tiempo real mediante tecnología NFC integrada en el collar.</p>
+            </div>
+        </div>
+        <div class="card" onclick="mostrarInfo('health')">
+            <div class="icon">📋</div>
+            <h3>Expediente Clinico Digital</h3>
+            <p>Historial médico completo, comunicación directa con veterinarios y seguimiento de tratamientos.</p>
+            <button class="btn-card">Ver detalles ></button>
+            <div class="extra-info" id="info-health">
+                <p>Acceso a cartillas de vacunación y citas veterinarias al instante.</p>
+            </div>
+        </div>
+        <div class="card" onclick="mostrarInfo('store')">
+            <div class="icon">🏪</div>
+            <h3>Tienda KOVA</h3>
+            <p>Tienda premium con productos especializados para el bienestar de tu chihuahua.</p>
+            <button class="btn-card">Ir a la tienda ></button>
+            <div class="extra-info" id="info-store">
+                <p>Encuentra alimento, accesorios y productos exclusivos de e-commerce.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Especial: Sofía y Carrusel -->
+    <section class="sofia-section">
+        <div class="sofia-text">
+            <h2>Nuestra Inspiración: Sofía</h2>
+            <p><strong>Sofía</strong> es la capital y la ciudad más grande de la República de Bulgaria.</p>
+            <p><strong>Ubicación:</strong> Se encuentra situada en un valle al oeste del país, justo al pie de la imponente montaña Vitosha.</p>
+            <p><strong>Historia:</strong> Es una de las ciudades más antiguas de Europa, con miles de años de historia en los que ha dejado huella el paso de civilizaciones tracias, romanas, bizantinas, otomanas y eslavas.</p>
+            <p><strong>Patrimonio:</strong> Destacan monumentos emblemáticos como la imponente Catedral de Alejandro Nevski, la Iglesia de San Jorge (del siglo IV) y la Iglesia de Boyana (declarada Patrimonio de la Humanidad por la UNESCO).</p>
+        </div>
+        
+        <!-- Carrusel de imágenes de la perrita Sofía -->
+        <div class="carousel-container">
+            <div class="carousel-slide fade">
+                <img src="../static/img/IMG_01.jpeg" alt="Foto de Sofía 1">
+            </div>
+            <div class="carousel-slide fade">
+                <img src="../static/img/IMG_02.jpeg" alt="Foto de Sofía 2">
+            </div>
+            <div class="carousel-slide fade">
+                <img src="../static/img/IMG_07.jpeg" alt="Foto de Sofía 3">
+            </div>
+            <div class="carousel-slide fade">
+                <img src="../static/img/IMG_17.jpeg" alt="Foto de Sofía 3">
+            </div>
+            <div class="carousel-slide fade">
+                <img src="../static/img/IMG_16.jpeg" alt="Foto de Sofía 3">
+            </div>
+            <button class="prev" onclick="cambiarSlide(-1)">&#10094;</button>
+            <button class="next" onclick="cambiarSlide(1)">&#10095;</button>
+        </div>
+    </section>
+
+    <!-- Sección Propósito -->
+    <section class="purpose">
+        <div class="purpose-title">
+            <span>NUESTRO PROPÓSITO</span>
+            <h2>Tecnología y amor por cada chihuahua</h2>
+        </div>
+        <div class="purpose-text">
+            <p>En KOVA creemos que la tecnología y el amor pueden cambiar vidas. Por eso desarrollamos soluciones digitales que conectan, protegen y mejoran el bienestar de cada chihuahua.</p>
+            <button class="btn-outline">Conoce más ></button>
+        </div>
+    </section>
+
+    <script src="../static/js/script1.js"></script>
+</body>
+</html>
