@@ -102,16 +102,20 @@ GOOGLE_CLIENT_ID = "144324961012-sv6ggpbi9gn0sc3f6jap6n9ckkfhcc5q.apps.googleuse
 # -------------------------------------------------------------------
 # CONFIGURACIÓN DE BASE DE DATOS (LOCAL XAMPP)
 # -------------------------------------------------------------------
+
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
+    "port": int(os.getenv("DB_PORT", "3306")),
     "user": os.getenv("DB_USER", "root"),
     "password": os.getenv("DB_PASSWORD", ""),
     "database": os.getenv("DB_NAME", "kova_db"),
     "charset": "utf8mb4",
+    "connection_timeout": 10
 }
 
 def get_db_connection():
     return mysql.connector.connect(**DB_CONFIG)
+
 
 # --- Configuración de Flask-Mail (Gmail) ---
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
