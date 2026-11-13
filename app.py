@@ -103,9 +103,9 @@ GOOGLE_CLIENT_ID = "144324961012-sv6ggpbi9gn0sc3f6jap6n9ckkfhcc5q.apps.googleuse
 # CONFIGURACIÓN DE BASE DE DATOS (LOCAL XAMPP)
 # -------------------------------------------------------------------
 DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "user": os.getenv("DB_USER", "root"),
-    "password": os.getenv("DB_PASSWORD", ""),
+    "host": os.getenv("DB_HOST", "mynxqz2diweyjnruy0juhuft"),
+    "user": os.getenv("DB_USER", "mysql"),
+    "password": os.getenv("DB_PASSWORD", "mQpIVIWTQ4Z8DKmpAUDxfjksBFj7O5B8XBC423jtkDG8KIyGjXX3XoVtabBVfYQ2"),
     "database": os.getenv("DB_NAME", "kova_db"),
     "charset": "utf8mb4",
 }
