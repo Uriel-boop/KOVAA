@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 5000
 
 # Comando para ejecutar la aplicación con Gunicorn en producción
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--timeout", "120", "app:py:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "--timeout", "120", "app:app"]
