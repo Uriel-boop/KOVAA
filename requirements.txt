@@ -5,6 +5,6 @@ mysql-connector-python==8.3.0
 gunicorn==21.2.0
 requests==2.31.0
 twilio==9.0.0
-Pillow==10.2.0
-rembg==2.0.50
+Pillow>=11.0.0
+rembg[cpu]
 google-auth==2.29.0
