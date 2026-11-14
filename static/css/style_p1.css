@@ -306,3 +306,108 @@ a.btn-login:hover {
     font-weight: bold;
     cursor: pointer;
 }
+
+/* ==========================================
+   DISEÑO RESPONSIVO PARA MÓVILES Y TABLETAS
+   ========================================== */
+
+@media screen and (max-width: 900px) {
+    /* Barra de navegación */
+    .navbar {
+        padding: 15px 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    /* Sección Hero */
+    .hero {
+        flex-direction: column-reverse;
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .hero-content {
+        padding-right: 0;
+        margin-top: 20px;
+    }
+
+    .hero h1 {
+        font-size: 2.1em;
+    }
+
+    .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    /* Tarjetas Interactivas */
+    .features {
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 20px;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    /* Sección Sofía y Carrusel */
+    .sofia-section {
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 30px;
+    }
+
+    .carousel-container {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .carousel-slide img {
+        height: 280px;
+    }
+
+    /* Sección Propósito */
+    .purpose {
+        flex-direction: column;
+        padding: 30px 20px;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .purpose-title h2 {
+        max-width: 100%;
+        font-size: 1.6em;
+    }
+
+    .purpose-text {
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .navbar {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .nav-links {
+        margin: 5px 0;
+    }
+
+    .hero h1 {
+        font-size: 1.7em;
+    }
+
+    .hero p {
+        font-size: 1em;
+    }
+}
