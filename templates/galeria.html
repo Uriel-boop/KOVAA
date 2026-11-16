@@ -142,6 +142,8 @@
         .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: var(--primary-text); }
         .form-group select, .form-group input { width: 100%; padding: 9px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.88rem; }
     </style>
+    <!-- Estilos de ambientación mensual KOVA -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/temporadas.css', v='20261116-2') }}">
 </head>
 <body>
 
@@ -516,5 +518,7 @@
         }
 
     </script>
+    <!-- Animaciones y festividades de KOVA -->
+    <script src="{{ url_for('static', filename='js/temporadas.js', v='20261116-2') }}" defer></script>
 </body>
 </html>
