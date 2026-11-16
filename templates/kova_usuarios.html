@@ -1748,6 +1748,15 @@
                 animation: kovaEntrada .6s ease-out;
             }
 
+            #kova-dia-muertos .kova-gif-temporada {
+                display: block;
+                width: 130px;
+                height: 130px;
+                object-fit: contain;
+                margin: 0 auto 10px;
+                border-radius: 12px;
+            }
+
             #kova-dia-muertos .kova-flores {
                 font-size: 34px;
                 margin-bottom: 8px;
@@ -1830,7 +1839,11 @@
         tarjeta.id = "kova-dia-muertos";
         tarjeta.innerHTML = `
             <button type="button" aria-label="Cerrar">×</button>
-            <div class="kova-flores">🏵️ 🕯️ 🌼</div>
+            <img
+                src="{{ url_for('static', filename='img/kova_dia_muertos.gif') }}"
+                alt="Kova vestida de catrina para Día de Muertos"
+                class="kova-gif-temporada"
+            >
             <strong>🐾 KOVA - Día de Muertos</strong>
             <p>
                 Recordamos con amor a quienes
