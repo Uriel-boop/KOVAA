@@ -116,6 +116,14 @@ DB_CONFIG = {
 def get_db_connection():
     return mysql.connector.connect(**DB_CONFIG)
 
+print("=== CONEXIÓN MYSQL KOVA ===")
+print("HOST:", DB_CONFIG["host"])
+print("PUERTO:", DB_CONFIG["port"])
+print("BASE DE DATOS:", DB_CONFIG["database"])
+print("USUARIO:", DB_CONFIG["user"])
+print("==========================")
+
+
 
 # --- Configuración de Flask-Mail (Gmail) ---
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -393,8 +401,26 @@ def registrar_mascota():
         return '', 200
     try:
         data = request.get_json() or {}
+        
         conn = get_db_connection()
         cursor = conn.cursor()
+
+        # DIAGNÓSTICO DE LA BASE DE DATOS
+        cursor.execute("SELECT DATABASE(), @@hostname")
+        print("DIAGNOSTICO MYSQL:", cursor.fetchone(), flush=True)
+
+        cursor.execute("SHOW FULL TABLES LIKE 'registro_mascota'")
+        print("TABLA REGISTRO:", cursor.fetchall(), flush=True)
+
+        cursor.execute("SHOW COLUMNS FROM registro_mascota")
+        print(
+            "COLUMNAS REGISTRO:",
+            [col[0] for col in cursor.fetchall()],
+            flush=True
+        )
+
+        # CONTINÚA EL REGISTRO NORMAL
+
         query = """
             INSERT INTO registro_mascota 
             (id_usuario, nombre_mascota, raza, sexo, esterilizado, fecha_nacimiento, color, peso_kg, imagen, token_nfc, nom_tutor, 
