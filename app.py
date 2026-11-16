@@ -397,37 +397,6 @@ def registrar_mascota():
         cursor = conn.cursor()
         query = """
             INSERT INTO registro_mascota 
-            (id_usuario, nombre_mascota, fecha_nacimiento, raza, color, peso_kg, imagen, token_nfc, nom_tutor, 
-             tel_cont_1, tel_cont_2, tel_cont_3, tel_cont_4, tel_cont_5, descripcion)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        values = (
-            data.get('usuario_id'), data.get('nombre_mascota'), data.get('fecha_nacimiento') or None,
-            data.get('raza', ''), data.get('color'), data.get('peso_kg') or None,
-            data.get('imagen', ''), data.get('token_nfc', ''), data.get('nom_tutor', ''),
-            data.get('tel_cont_1', ''), data.get('tel_cont_2', ''), data.get('tel_cont_3', ''),
-            data.get('tel_cont_4', ''), data.get('tel_cont_5', ''), data.get('descripcion', '')
-        )
-        cursor.execute(query, values)
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return jsonify({"status": "success", "message": "Mascota registrada exitosamente."}), 200
-    except Exception as e:
-        print("Error en /api/registrar_mascota:", str(e))
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@app.route('/api/registrar_mascota', methods=['POST', 'OPTIONS'])
-def registrar_mascota():
-    if request.method == 'OPTIONS':
-        return '', 200
-    try:
-        data = request.get_json() or {}
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        query = """
-            INSERT INTO registro_mascota 
             (id_usuario, nombre_mascota, raza, sexo, esterilizado, fecha_nacimiento, color, peso_kg, imagen, token_nfc, nom_tutor, 
              tel_cont_1, tel_cont_2, tel_cont_3, tel_cont_4, tel_cont_5, descripcion)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
