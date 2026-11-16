@@ -97,6 +97,59 @@ def ejecutar_ia_propia(input_path, output_path, efecto):
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
+
+# KOVA - Inyectar efectos de temporada en las páginas HTML
+@app.after_request
+def agregar_temporadas_kova(response):
+    if response.status_code != 200:
+        return response
+
+    if response.mimetype != "text/html":
+        return response
+
+    html = response.get_data(as_text=True)
+
+    # Evitar cargar dos veces el sistema nuevo
+    if 'id="kova-temporadas-global"' in html:
+        return response
+
+    # Eliminar referencias anteriores a los mismos archivos
+    import re
+
+    html = re.sub(
+        r'<link\b[^>]*href=["\'][^"\']*/static/css/temporadas\.css[^"\']*["\'][^>]*>',
+        '',
+        html,
+        flags=re.IGNORECASE
+    )
+
+    html = re.sub(
+        r'<script\b[^>]*src=["\'][^"\']*/static/js/temporadas\.js[^"\']*["\'][^>]*>\s*</script>',
+        '',
+        html,
+        flags=re.IGNORECASE
+    )
+
+    css = (
+        '<link id="kova-temporadas-global" rel="stylesheet" '
+        'href="/static/css/temporadas.css?v=20261116-5">'
+    )
+
+    js = (
+        '<script src="/static/js/temporadas.js?v=20261116-5" '
+        'defer></script>'
+    )
+
+    if "</head>" in html:
+        html = html.replace("</head>", css + "\n</head>", 1)
+
+    if "</body>" in html:
+        html = html.replace("</body>", js + "\n</body>", 1)
+
+    response.set_data(html)
+    return response
+
+
 GOOGLE_CLIENT_ID = "144324961012-sv6ggpbi9gn0sc3f6jap6n9ckkfhcc5q.apps.googleusercontent.com"
 
 # -------------------------------------------------------------------

@@ -1,262 +1,167 @@
 
-/* KOVA - Calendario anual de temporadas */
-(function () {
+/* KOVA - Sistema automático de temporadas */
+(() => {
     "use strict";
 
-    const TEMPORADAS = {
-        1: {
-            nombre: "Año Nuevo",
-            simbolos: ["✨", "⭐", "🎉"],
-            mensaje: "¡Kova te desea un año lleno de alegría!",
-            color: "#243b75"
-        },
-        2: {
-            nombre: "Amor y Amistad",
-            simbolos: ["❤️", "💕", "💗"],
-            mensaje: "¡Kova te manda mucho cariño!",
-            color: "#b83265"
-        },
-        3: {
-            nombre: "Primavera",
-            simbolos: ["🌸", "🌼", "🌷"],
-            mensaje: "¡La primavera llegó a KOVA!",
-            color: "#44894a"
-        },
-        4: {
-            nombre: "Día del Niño",
-            simbolos: ["🎈", "🎉", "⭐"],
-            mensaje: "¡Que nunca falten los juegos y las sonrisas!",
-            color: "#3978b8"
-        },
-        5: {
-            nombre: "Día de las Madres",
-            simbolos: ["🌷", "🌸", "❤️"],
-            mensaje: "¡Kova celebra con cariño a todas las mamás!",
-            color: "#a64775"
-        },
-        6: {
-            nombre: "Verano",
-            simbolos: ["☀️", "🌻", "✨"],
-            mensaje: "¡Disfruta los días soleados con Kova!",
-            color: "#bb7923"
-        },
-        7: {
-            nombre: "Vacaciones",
-            simbolos: ["☀️", "🏖️", "🌴"],
-            mensaje: "¡Kova te desea unas vacaciones increíbles!",
-            color: "#168b9b"
-        },
-        8: {
-            nombre: "Regreso a Clases",
-            simbolos: ["📚", "✏️", "⭐"],
-            mensaje: "¡Un nuevo comienzo lleno de aprendizajes!",
-            color: "#4266a3"
-        },
-        9: {
-            nombre: "Mes Patrio",
-            simbolos: ["🇲🇽", "💚", "🤍", "❤️"],
-            mensaje: "¡Kova celebra con orgullo a México!",
-            color: "#176846"
-        },
-        10: {
-            nombre: "Halloween",
-            simbolos: ["🎃", "👻", "🦇"],
-            mensaje: "¡Kova te desea un Halloween divertido!",
-            color: "#773d91"
-        },
+    if (window.__kovaTemporadasIniciado) return;
+    window.__kovaTemporadasIniciado = true;
+
+    const BASE = "/static/img/";
+
+    const CALENDARIO = {
+        1:  { nombre: "Año Nuevo", emoji: ["✨", "⭐"], mensaje: "¡Un nuevo año de aventuras!", color: "#263f83" },
+        2:  { nombre: "Amor y Amistad", emoji: ["💕", "❤️"], mensaje: "¡Mucho cariño de parte de Kova!", color: "#a72e68" },
+        3:  { nombre: "Primavera", emoji: ["🌸", "🌷"], mensaje: "¡Bienvenida la primavera!", color: "#448b54" },
+        4:  { nombre: "Día del Niño", emoji: ["🎈", "⭐"], mensaje: "¡A jugar y disfrutar!", color: "#287ca3" },
+        5:  { nombre: "Día de las Madres", emoji: ["🌷", "💗"], mensaje: "¡Con cariño para todas las mamás!", color: "#a94c7a" },
+        6:  { nombre: "Verano", emoji: ["☀️", "🌻"], mensaje: "¡Disfruta los días soleados!", color: "#b87822" },
+        7:  { nombre: "Vacaciones", emoji: ["🌴", "☀️"], mensaje: "¡Felices vacaciones!", color: "#168b9b" },
+        8:  { nombre: "Regreso a Clases", emoji: ["📚", "✏️"], mensaje: "¡Mucho éxito en este nuevo comienzo!", color: "#4866a4" },
+        9:  { nombre: "Mes Patrio", emoji: ["🇲🇽", "💚"], mensaje: "¡Viva México!", color: "#176b48" },
+        10: { nombre: "Halloween", emoji: ["🎃", "👻"], mensaje: "¡Una celebración espeluznante!", color: "#793c92" },
         11: {
             nombre: "Día de Muertos",
-            simbolos: ["🏵️", "🧡", "🕯️", "🌼"],
-            mensaje: "Recordamos con amor a quienes siempre vivirán en nuestro corazón. 🐾",
-            imagen: "/static/img/kova_dia_muertos.gif",
-            color: "#69348a"
-            
+            emoji: ["🏵️", "🌼"],
+            mensaje: "Recordamos con amor a quienes siempre vivirán en nuestro corazón.",
+            color: "#71308b",
+            imagen: BASE + "kova_dia_muertos.gif"
         },
         12: {
             nombre: "Navidad",
-            simbolos: ["❄️", "❄️", "❄️"],
+            emoji: ["❄️", "⭐"],
             mensaje: "¡Kova te desea felices fiestas!",
-            color: "#185740",
-            imagen: "/static/img/kova_navidad_3d.gif"
+            color: "#16583d",
+            imagen: BASE + "kova_navidad_3d.gif"
         }
     };
 
-    const CONFIG = {
+    const config = {
         primeraAparicion: 3000,
-        intervalo: 180000,
-        duracion: 8000,
-        cantidadDecoraciones: 22
+        cadaCuanto: 180000,
+        duracion: 9000,
+        cantidad: 16
     };
 
-    const mes = new Date().getMonth() + 1;
-    const temporada = TEMPORADAS[mes];
+    let tarjeta, tiempoOcultar;
+    let cerrada = false;
 
-    let temporizador = null;
-    let repeticion = null;
-    let cerrado = false;
+    function obtenerTemporada() {
+        return CALENDARIO[new Date().getMonth() + 1];
+    }
 
-    function hayFormularioAbierto() {
+    function modalAbierto() {
         return [...document.querySelectorAll(
-            ".modal, [role='dialog']"
-        )].some(elemento => {
-            const estilo = getComputedStyle(elemento);
-
+            ".modal, [role='dialog'], dialog[open]"
+        )].some(el => {
+            const estilo = getComputedStyle(el);
             return estilo.display !== "none" &&
-                estilo.visibility !== "hidden" &&
-                elemento.getBoundingClientRect().height > 0;
+                   estilo.visibility !== "hidden" &&
+                   el.getBoundingClientRect().height > 0;
         });
     }
 
-    function ocultarSaludo() {
-        const tarjeta = document.getElementById("kova-saludo");
-
-        if (tarjeta) {
-            tarjeta.classList.remove("visible");
-        }
+    function ocultar() {
+        if (tarjeta) tarjeta.classList.remove("kova-visible");
     }
 
-    function mostrarSaludo() {
-        if (cerrado || document.hidden || hayFormularioAbierto()) {
-            return;
-        }
-
-        const tarjeta = document.getElementById("kova-saludo");
-
+    function mostrar() {
+        if (cerrada || document.hidden || modalAbierto()) return;
         if (!tarjeta) return;
 
-        tarjeta.classList.add("visible");
-
-        clearTimeout(temporizador);
-
-        temporizador = setTimeout(
-            ocultarSaludo,
-            CONFIG.duracion
-        );
+        tarjeta.classList.add("kova-visible");
+        clearTimeout(tiempoOcultar);
+        tiempoOcultar = setTimeout(ocultar, config.duracion);
     }
 
-    function crearDecoracion() {
-        const capa = document.createElement("div");
+    function crearTarjeta(temporada) {
+        tarjeta = document.createElement("aside");
+        tarjeta.id = "kova-tarjeta-temporada";
+        tarjeta.style.setProperty("--kova-color", temporada.color);
+        tarjeta.setAttribute("aria-label", "Saludo de temporada");
 
-        capa.id = "kova-nieve";
-        capa.className = "kova-decoracion";
+        const cerrar = document.createElement("button");
+        cerrar.type = "button";
+        cerrar.className = "kova-cerrar-temporada";
+        cerrar.textContent = "×";
+        cerrar.setAttribute("aria-label", "Cerrar saludo");
+        cerrar.addEventListener("click", () => {
+            cerrada = true;
+            ocultar();
+        });
+
+        const visual = document.createElement(
+            temporada.imagen ? "img" : "div"
+        );
+        visual.className = "kova-visual-temporada";
+
+        if (temporada.imagen) {
+            visual.src = temporada.imagen;
+            visual.alt = "Kova celebrando " + temporada.nombre;
+            visual.loading = "eager";
+        } else {
+            visual.textContent = temporada.emoji[0];
+        }
+
+        const titulo = document.createElement("strong");
+        titulo.textContent = "🐾 KOVA - " + temporada.nombre;
+
+        const mensaje = document.createElement("p");
+        mensaje.textContent = temporada.mensaje;
+
+        tarjeta.append(cerrar, visual, titulo, mensaje);
+        document.body.appendChild(tarjeta);
+    }
+
+    function crearDecoraciones(temporada) {
+        const capa = document.createElement("div");
+        capa.id = "kova-capa-temporada";
         capa.setAttribute("aria-hidden", "true");
 
-        for (let i = 0; i < CONFIG.cantidadDecoraciones; i++) {
-            const elemento = document.createElement("span");
-
-            elemento.textContent =
-                temporada.simbolos[
-                    i % temporada.simbolos.length
-                ];
-
-            elemento.style.left =
-                (Math.random() * 100) + "%";
-
-            elemento.style.fontSize =
-                (15 + Math.random() * 12) + "px";
-
-            elemento.style.animationDuration =
-                (9 + Math.random() * 10) + "s";
-
-            elemento.style.animationDelay =
+        for (let i = 0; i < config.cantidad; i++) {
+            const figura = document.createElement("span");
+            figura.textContent =
+                temporada.emoji[i % temporada.emoji.length];
+            figura.style.left = (Math.random() * 100) + "%";
+            figura.style.fontSize = (13 + Math.random() * 12) + "px";
+            figura.style.animationDuration =
+                (9 + Math.random() * 9) + "s";
+            figura.style.animationDelay =
                 (-Math.random() * 18) + "s";
-
-            capa.appendChild(elemento);
+            capa.appendChild(figura);
         }
 
         document.body.appendChild(capa);
     }
 
-    function crearSaludo() {
-        const tarjeta = document.createElement("div");
+    function iniciar() {
+        if (!document.body) return;
 
-        tarjeta.id = "kova-saludo";
-        tarjeta.setAttribute("role", "status");
+        const temporada = obtenerTemporada();
 
-        tarjeta.style.background =
-            "linear-gradient(135deg, " +
-            temporada.color +
-            ", #242333)";
+        // Limpiar decoraciones de implementaciones anteriores
+        [
+            "kova-saludo",
+            "kova-nieve",
+            "kova-probar",
+            "kova-dia-muertos",
+            "kova-tarjeta-temporada",
+            "kova-capa-temporada"
+        ].forEach(id => document.getElementById(id)?.remove());
 
-        const cerrar = document.createElement("button");
-        cerrar.id = "kova-cerrar";
-        cerrar.type = "button";
-        cerrar.textContent = "×";
-        cerrar.setAttribute("aria-label", "Cerrar saludo");
+        crearDecoraciones(temporada);
+        crearTarjeta(temporada);
 
-        cerrar.addEventListener("click", () => {
-            cerrado = true;
-            ocultarSaludo();
-            clearInterval(repeticion);
-        });
-
-        tarjeta.appendChild(cerrar);
-
-        if (temporada.imagen) {
-            const imagen = document.createElement("img");
-
-            imagen.src = temporada.imagen;
-            imagen.alt = "Kova celebrando " + temporada.nombre;
-
-            tarjeta.appendChild(imagen);
-        } else {
-            const mascota = document.createElement("div");
-
-            mascota.className = "kova-icono-temporada";
-            mascota.textContent = temporada.simbolos[0];
-
-            tarjeta.appendChild(mascota);
-        }
-
-        const mensaje = document.createElement("div");
-        mensaje.className = "kova-mensaje";
-
-        const titulo = document.createElement("strong");
-        titulo.textContent = "🐾 KOVA - " + temporada.nombre;
-
-        const descripcion = document.createElement("span");
-        descripcion.textContent = temporada.mensaje;
-
-        mensaje.appendChild(titulo);
-        mensaje.appendChild(descripcion);
-
-        tarjeta.appendChild(mensaje);
-        document.body.appendChild(tarjeta);
-    }
-
-    function iniciarTemporada() {
-        if (!document.body || !temporada) return;
-
-        // Evita crear elementos duplicados
-        document.getElementById("kova-saludo")?.remove();
-        document.getElementById("kova-nieve")?.remove();
-        document.getElementById("kova-probar")?.remove();
-
-        crearDecoracion();
-        crearSaludo();
-
-        setTimeout(
-            mostrarSaludo,
-            CONFIG.primeraAparicion
-        );
-
-        repeticion = setInterval(
-            mostrarSaludo,
-            CONFIG.intervalo
-        );
+        setTimeout(mostrar, config.primeraAparicion);
+        setInterval(mostrar, config.cadaCuanto);
 
         document.addEventListener("visibilitychange", () => {
-            if (document.hidden) ocultarSaludo();
+            if (document.hidden) ocultar();
         });
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            iniciarTemporada,
-            { once: true }
-        );
+        document.addEventListener("DOMContentLoaded", iniciar, { once: true });
     } else {
-        iniciarTemporada();
+        iniciar();
     }
 })();
