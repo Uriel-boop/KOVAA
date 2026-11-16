@@ -1,12 +1,176 @@
-/* KOVA - Ambientacion navidena aislada de la interfaz funcional */
-:root{--kova-festive-red:#a61e32;--kova-festive-gold:#f4ce7b}
-#kova-festive-layer{position:fixed;inset:0;pointer-events:none;z-index:2147482000;overflow:hidden;contain:layout style paint}
-#kova-festive-layer .kova-garland{position:absolute;top:0;left:0;right:0;height:11px;background:repeating-linear-gradient(100deg,#17563f 0 18px,#c72c3e 18px 24px,#f6d88b 24px 30px,#17563f 30px 48px);box-shadow:0 2px 10px #0a241c55}
-#kova-festive-layer .kova-snow{position:absolute;top:-20px;color:#fff;text-shadow:0 0 4px #266f83,0 1px 7px #08252c;font-size:var(--snow-size,16px);left:var(--snow-x);opacity:.8;animation:kova-snowfall var(--snow-duration) linear infinite;animation-delay:var(--snow-delay)}
-@keyframes kova-snowfall{to{transform:translate3d(var(--snow-drift),105vh,0) rotate(160deg)}}
-#kova-festive-toggle{position:fixed;bottom:16px;right:16px;z-index:2147482100;border:1px solid #e6c87e;background:#164d3b;color:white;padding:10px 13px;border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px #0004;cursor:pointer;max-width:calc(100vw - 32px)}
-#kova-festive-toggle:focus-visible{outline:3px solid #f4ce7b;outline-offset:3px}
-#kova-festive-greeting{position:fixed;left:12px;bottom:12px;z-index:2147482001;pointer-events:none;background:#164d3bea;color:#fff;border:1px solid #e7c775;border-radius:16px;padding:9px 12px;max-width:min(310px,calc(100vw - 112px));font:600 12px/1.35 system-ui,sans-serif;box-shadow:0 4px 16px #0003}
-#kova-festive-greeting img{width:34px;height:34px;object-fit:cover;border-radius:50%;vertical-align:middle;margin-right:6px}
-@media(max-width:600px){#kova-festive-greeting{font-size:11px;max-width:190px}#kova-festive-toggle{font-size:12px;padding:9px}#kova-festive-layer .kova-snow:nth-child(n+15){display:none}}
-@media(prefers-reduced-motion:reduce){#kova-festive-layer .kova-snow{animation:none;display:none}}
+
+/* KOVA - Animación navideña */
+
+/* Copos de nieve */
+#kova-nieve {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 800;
+}
+
+#kova-nieve span {
+    position: absolute;
+    top: -30px;
+    color: white;
+    text-shadow: 0 0 5px #438caa;
+    animation: kova-nevada linear infinite;
+}
+
+@keyframes kova-nevada {
+    from {
+        transform: translateY(-30px) rotate(0deg);
+    }
+    to {
+        transform: translateY(110vh) rotate(360deg);
+    }
+}
+
+/* Tarjeta de Kova */
+#kova-saludo {
+    position: fixed;
+    right: 20px;
+    bottom: 75px;
+    z-index: 950;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 310px;
+    max-width: calc(100vw - 30px);
+    padding: 12px 30px 12px 12px;
+
+    background: linear-gradient(135deg, #164e3c, #26745c);
+    border: 2px solid #d9b66c;
+    border-radius: 20px;
+
+    color: white;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: translateX(120%);
+    transition: transform .6s ease,
+                opacity .6s ease,
+                visibility .6s ease;
+}
+
+/* Entrada animada */
+#kova-saludo.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+/* Imagen de Kova */
+#kova-saludo img {
+    width: 100px;
+    height: 115px;
+    object-fit: contain;
+    flex-shrink: 0;
+    animation: kova-flotar 2.5s ease-in-out infinite;
+}
+
+@keyframes kova-flotar {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Mensaje */
+.kova-mensaje {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.kova-mensaje strong {
+    font-size: 15px;
+}
+
+/* Cerrar */
+#kova-cerrar {
+    position: absolute;
+    top: 5px;
+    right: 9px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Botón de prueba */
+#kova-probar {
+    position: fixed;
+    bottom: 15px;
+    right: 20px;
+    z-index: 950;
+
+    background: #185740;
+    color: white;
+    border: 1px solid #d9b66c;
+    border-radius: 25px;
+    padding: 10px 15px;
+
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+
+#kova-probar:hover {
+    background: #28795a;
+}
+
+/* Adaptación a celulares */
+@media (max-width: 600px) {
+    #kova-saludo {
+        right: 10px;
+        bottom: 65px;
+        width: 245px;
+        padding: 10px 25px 10px 8px;
+        gap: 6px;
+    }
+
+    #kova-saludo img {
+        width: 75px;
+        height: 90px;
+    }
+
+    .kova-mensaje {
+        font-size: 11px;
+    }
+
+    .kova-mensaje strong {
+        font-size: 12px;
+    }
+
+    #kova-probar {
+        right: 10px;
+        bottom: 12px;
+        font-size: 11px;
+    }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    #kova-nieve span,
+    #kova-saludo img {
+        animation: none;
+    }
+
+    #kova-saludo {
+        transition: none;
+    }
+}
