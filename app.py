@@ -395,6 +395,30 @@ def verify_reset_code():
 # ENDPOINTS DE REGISTRO Y GESTIÓN DE MASCOTAS
 # -------------------------------------------------------------------
 
+@app.route('/api/mascotas/<int:id_usuario>', methods=['GET'])
+def listar_mascotas(id_usuario):
+    """Devuelve las mascotas del usuario desde la misma BD que registra y edita."""
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            "SELECT * FROM registro_mascota WHERE id_usuario = %s ORDER BY id_mascota DESC",
+            (id_usuario,)
+        )
+        mascotas = cursor.fetchall()
+        return jsonify({"status": "success", "mascotas": mascotas}), 200
+    except Exception:
+        app.logger.exception("Error al consultar mascotas")
+        return jsonify({"status": "error", "message": "No fue posible consultar las mascotas."}), 500
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None and conn.is_connected():
+            conn.close()
+
+
 @app.route('/api/registrar_mascota', methods=['POST', 'OPTIONS'])
 def registrar_mascota():
     if request.method == 'OPTIONS':
@@ -404,22 +428,6 @@ def registrar_mascota():
         
         conn = get_db_connection()
         cursor = conn.cursor()
-
-        # DIAGNÓSTICO DE LA BASE DE DATOS
-        cursor.execute("SELECT DATABASE(), @@hostname")
-        print("DIAGNOSTICO MYSQL:", cursor.fetchone(), flush=True)
-
-        cursor.execute("SHOW FULL TABLES LIKE 'registro_mascota'")
-        print("TABLA REGISTRO:", cursor.fetchall(), flush=True)
-
-        cursor.execute("SHOW COLUMNS FROM registro_mascota")
-        print(
-            "COLUMNAS REGISTRO:",
-            [col[0] for col in cursor.fetchall()],
-            flush=True
-        )
-
-        # CONTINÚA EL REGISTRO NORMAL
 
         query = """
             INSERT INTO registro_mascota 

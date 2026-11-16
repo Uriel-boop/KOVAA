@@ -1098,7 +1098,7 @@
 
         async function cargarMascotas(usuarioId) {
             try {
-                const res = await fetch(`http://127.0.0.1:5000/api/mascotas/${usuarioId}`);
+                const res = await fetch(`/api/mascotas/${usuarioId}`);
                 const data = await res.json();
 
                 if (data.status === 'success' && data.mascotas.length > 0) {
@@ -1113,6 +1113,7 @@
                     });
 
                     document.getElementById('pet-selector-wrapper').style.display = 'block';
+                    if (mascotaSeleccionadaIndex >= listaMascotas.length) mascotaSeleccionadaIndex = 0;
                     select.value = mascotaSeleccionadaIndex;
                     mostrarDetalleMascota(mascotaSeleccionadaIndex);
                 } else {
@@ -1207,6 +1208,17 @@
     modal.style.display = 'flex';
 }
 
+        // Cierra el formulario tanto en modo registro como en edición.
+        function cerrarModal() {
+            const modal = document.getElementById('modal-registro');
+            if (modal) modal.style.display = 'none';
+            const form = document.getElementById('form-mascota');
+            if (form) form.reset();
+            document.getElementById('m-id-mascota').value = '';
+            base64Imagen = '';
+            modoModal = 'registro';
+        }
+
         async function guardarMascota(e) {
     if (e) e.preventDefault();
 
@@ -1241,11 +1253,11 @@
     };
 
     try {
-        let url = 'http://127.0.0.1:5000/api/registrar_mascota';
+        let url = '/api/registrar_mascota';
         let metodo = 'POST';
 
         if (modoModal === 'edicion' && mascotaIdInput) {
-            url = `http://127.0.0.1:5000/api/editar_mascota/${mascotaIdInput}`;
+            url = `/api/editar_mascota/${mascotaIdInput}`;
             metodo = 'PUT';
         }
 
@@ -1350,7 +1362,7 @@
     if (!contenedor) return;
 
     try {
-        const res = await fetch(`http://127.0.0.1:5000/obtener_historial/${idMascota}`);
+        const res = await fetch(`/obtener_historial/${idMascota}`);
         const data = await res.json();
 
         let botonActualizarHtml = `
@@ -1446,7 +1458,7 @@
                         ${item.consulta_imagen ? `
                             <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 10px;">
                                 <span style="font-size: 0.8rem; color: #64748b; font-weight: 600;"><i class="fa-solid fa-paperclip"></i> Archivo / Evidencia Adjunta:</span><br>
-                                <a href="http://127.0.0.1:5000/static/uploads/${item.consulta_imagen}" target="_blank" style="color: var(--primary-accent); font-weight: bold; text-decoration: underline; display: inline-block; margin-top: 5px;">
+                                <a href="/static/uploads/${item.consulta_imagen}" target="_blank" style="color: var(--primary-accent); font-weight: bold; text-decoration: underline; display: inline-block; margin-top: 5px;">
                                     <i class="fa-solid fa-file-arrow-down"></i> Ver / Descargar archivo (${item.consulta_imagen})
                                 </a>
                             </div>
@@ -1512,7 +1524,7 @@
         }
     });
 
-    fetch('http://127.0.0.1:5000/actualizar_historial', {
+    fetch('/actualizar_historial', {
         method: 'POST',
         body: formData
     })
