@@ -1559,18 +1559,23 @@
             window.location.href = "/login";
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPage = window.location.pathname.split('/').filter(Boolean).pop() || 'usuarios';
-            document.getElementById('navbar-container').innerHTML = `
-                <nav class="main-navigation">
-                    <a href="/usuarios" class="nav-btn ${currentPage === 'kova_usuarios.html' ? 'active' : ''}">Expediente 360°</a>
-                    <a href="/mapa" class="nav-btn ${currentPage === 'mapa.html' ? 'active' : ''}">Mapa & Geocercas</a>
-                    <a href="/galeria" class="nav-btn ${currentPage === 'galeria.html' ? 'active' : ''}">Galería de Efectos</a>
-                    <a href="/catalogo" class="nav-btn ${currentPage === 'catalogo.html' ? 'active' : ''}">Productos y Servicios</a>
-                    <a href="/suscripciones" class="nav-btn ${currentPage === 'suscripciones.html' ? 'active' : ''}">Suscripciones</a>
-                </nav>
-            `;
-        });
+        
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname
+        .split('/')
+        .filter(Boolean)
+        .pop() || 'usuarios';
+
+    document.getElementById('navbar-container').innerHTML = `
+        <nav class="main-navigation">
+            <a href="/usuarios" class="nav-btn ${currentPage === 'usuarios' ? 'active' : ''}">Expediente 360°</a>
+            <a href="/mapa" class="nav-btn ${currentPage === 'mapa' ? 'active' : ''}">Mapa & Geocercas</a>
+            <a href="/galeria" class="nav-btn ${currentPage === 'galeria' ? 'active' : ''}">Galería de Efectos</a>
+            <a href="/catalogo" class="nav-btn ${currentPage === 'catalogo' ? 'active' : ''}">Productos y Servicios</a>
+            <a href="/suscripciones" class="nav-btn ${currentPage === 'suscripciones' ? 'active' : ''}">Suscripciones</a>
+        </nav>
+    `;
+});
 
         function exportarCarnetPDF() {
             const m = listaMascotas[mascotaSeleccionadaIndex];
