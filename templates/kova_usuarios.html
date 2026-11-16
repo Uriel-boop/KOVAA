@@ -1716,5 +1716,173 @@
     <!-- Animaciones y festividades de KOVA -->
     <script src="{{ url_for('static', filename='js/temporadas.js', v='20261116-2') }}" defer></script>
 
+<!-- KOVA: Decoración de noviembre -->
+<script>
+(function () {
+    "use strict";
+
+    // Mostrar Día de Muertos durante todo noviembre
+    if (new Date().getMonth() !== 10) return;
+
+    function iniciarDiaDeMuertos() {
+        if (document.getElementById("kova-dia-muertos")) return;
+
+        const estilos = document.createElement("style");
+        estilos.textContent = `
+            #kova-dia-muertos {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 290px;
+                max-width: calc(100vw - 40px);
+                padding: 18px;
+                border-radius: 18px;
+                background: linear-gradient(135deg, #57227a, #a64b16);
+                border: 2px solid #ffbb55;
+                color: white;
+                box-shadow: 0 8px 28px #0004;
+                z-index: 9999;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                box-sizing: border-box;
+                animation: kovaEntrada .6s ease-out;
+            }
+
+            #kova-dia-muertos .kova-flores {
+                font-size: 34px;
+                margin-bottom: 8px;
+            }
+
+            #kova-dia-muertos strong {
+                display: block;
+                font-size: 17px;
+                margin-bottom: 8px;
+            }
+
+            #kova-dia-muertos p {
+                font-size: 13px;
+                line-height: 1.5;
+                margin: 0;
+            }
+
+            #kova-dia-muertos button {
+                position: absolute;
+                right: 9px;
+                top: 6px;
+                background: transparent;
+                color: white;
+                border: none;
+                font-size: 23px;
+                cursor: pointer;
+            }
+
+            .kova-petalo {
+                position: fixed;
+                top: -40px;
+                pointer-events: none;
+                z-index: 900;
+                animation: kovaCaida linear forwards;
+            }
+
+            @keyframes kovaEntrada {
+                from {
+                    opacity: 0;
+                    transform: translateY(35px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes kovaCaida {
+                from {
+                    transform: translateY(-40px) rotate(0deg);
+                    opacity: .9;
+                }
+                to {
+                    transform: translateY(110vh) rotate(360deg);
+                    opacity: .3;
+                }
+            }
+
+            @media (max-width: 600px) {
+                #kova-dia-muertos {
+                    right: 10px;
+                    bottom: 12px;
+                    width: 245px;
+                    padding: 12px;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                #kova-dia-muertos {
+                    animation: none;
+                }
+                .kova-petalo {
+                    display: none;
+                }
+            }
+        `;
+        document.head.appendChild(estilos);
+
+        const tarjeta = document.createElement("div");
+        tarjeta.id = "kova-dia-muertos";
+        tarjeta.innerHTML = `
+            <button type="button" aria-label="Cerrar">×</button>
+            <div class="kova-flores">🏵️ 🕯️ 🌼</div>
+            <strong>🐾 KOVA - Día de Muertos</strong>
+            <p>
+                Recordamos con amor a quienes
+                siempre vivirán en nuestro corazón.
+            </p>
+        `;
+
+        document.body.appendChild(tarjeta);
+
+        const cerrar = tarjeta.querySelector("button");
+        cerrar.addEventListener("click", () => tarjeta.remove());
+
+        // La tarjeta desaparece automáticamente
+        setTimeout(() => tarjeta.remove(), 10000);
+
+        // Decoración ligera de flores
+        function crearFlor() {
+            if (document.hidden ||
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                return;
+            }
+
+            const flor = document.createElement("span");
+            flor.className = "kova-petalo";
+            flor.textContent = Math.random() > 0.5 ? "🏵️" : "🌼";
+            flor.style.left = Math.random() * 95 + "vw";
+            flor.style.fontSize = (14 + Math.random() * 12) + "px";
+            flor.style.animationDuration = (7 + Math.random() * 6) + "s";
+
+            document.body.appendChild(flor);
+            setTimeout(() => flor.remove(), 14000);
+        }
+
+        for (let i = 0; i < 8; i++) {
+            setTimeout(crearFlor, i * 400);
+        }
+
+        setInterval(crearFlor, 1800);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            iniciarDiaDeMuertos,
+            { once: true }
+        );
+    } else {
+        iniciarDiaDeMuertos();
+    }
+})();
+</script>
+<!-- Fin decoración de noviembre -->
+
 </body>
 </html>
