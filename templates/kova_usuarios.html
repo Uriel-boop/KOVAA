@@ -417,6 +417,10 @@
             box-shadow: 0 2px 6px rgba(242, 84, 135, 0.3);
         }
     </style>
+
+    <!-- Estilos de ambientación mensual KOVA -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/temporadas.css') }}">
+
 </head>
 <body>
 
@@ -1708,5 +1712,9 @@
             document.getElementById('subopcion_seleccionada').value = buttonElement.textContent.trim();
         }
     </script>
+
+    <!-- Animaciones y festividades de KOVA -->
+    <script src="{{ url_for('static', filename='js/temporadas.js') }}" defer></script>
+
 </body>
 </html>
