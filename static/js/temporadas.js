@@ -7,7 +7,7 @@
         primeraAparicion: 15000,
         intervalo: 180000,
         duracion: 8000,
-        imagen: "/static/img/kova_navidad.webp",
+        imagen: "/static/img/kova_navidad.webp?v=20261116-2",
         mensaje: "🎄 ¡Kova te desea felices fiestas!"
     };
 
