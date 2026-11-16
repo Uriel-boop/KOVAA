@@ -1560,7 +1560,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const currentPage = window.location.pathname.split('/').pop() || 'kova_usuarios.html';
+            const currentPage = window.location.pathname.split('/').filter(Boolean).pop() || 'usuarios';
             document.getElementById('navbar-container').innerHTML = `
                 <nav class="main-navigation">
                     <a href="/usuarios" class="nav-btn ${currentPage === 'kova_usuarios.html' ? 'active' : ''}">Expediente 360°</a>
