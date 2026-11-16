@@ -1,8 +1,7 @@
 
-/* KOVA - Animación navideña */
+/* KOVA - Decoraciones de todas las temporadas */
 
-/* Copos de nieve */
-#kova-nieve {
+.kova-decoracion {
     position: fixed;
     inset: 0;
     overflow: hidden;
@@ -10,167 +9,38 @@
     z-index: 800;
 }
 
-#kova-nieve span {
+.kova-decoracion span {
     position: absolute;
-    top: -30px;
-    color: white;
-    text-shadow: 0 0 5px #438caa;
+    top: -40px;
+    display: block;
+    opacity: 0.85;
+    pointer-events: none;
     animation: kova-nevada linear infinite;
 }
 
-@keyframes kova-nevada {
-    from {
-        transform: translateY(-30px) rotate(0deg);
-    }
-    to {
-        transform: translateY(110vh) rotate(360deg);
-    }
-}
-
-/* Tarjeta de Kova */
-#kova-saludo {
-    position: fixed;
-    right: 20px;
-    bottom: 75px;
-    z-index: 950;
-
+.kova-icono-temporada {
+    width: 90px;
+    min-width: 90px;
+    height: 100px;
     display: flex;
     align-items: center;
-    gap: 12px;
-
-    width: 310px;
-    max-width: calc(100vw - 30px);
-    padding: 12px 30px 12px 12px;
-
-    background: linear-gradient(135deg, #164e3c, #26745c);
-    border: 2px solid #d9b66c;
-    border-radius: 20px;
-
-    color: white;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.25);
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-
-    transform: translateX(120%);
-    transition: transform .6s ease,
-                opacity .6s ease,
-                visibility .6s ease;
-}
-
-/* Entrada animada */
-#kova-saludo.visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateX(0);
-}
-
-/* Imagen de Kova */
-#kova-saludo img {
-    width: 100px;
-    height: 115px;
-    object-fit: contain;
-    flex-shrink: 0;
+    justify-content: center;
+    font-size: 62px;
     animation: kova-flotar 2.5s ease-in-out infinite;
 }
 
-@keyframes kova-flotar {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-6px);
-    }
-}
-
-/* Mensaje */
-.kova-mensaje {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 13px;
-    line-height: 1.4;
-}
-
-.kova-mensaje strong {
-    font-size: 15px;
-}
-
-/* Cerrar */
-#kova-cerrar {
-    position: absolute;
-    top: 5px;
-    right: 9px;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Botón de prueba */
-#kova-probar {
-    position: fixed;
-    bottom: 15px;
-    right: 20px;
-    z-index: 950;
-
-    background: #185740;
-    color: white;
-    border: 1px solid #d9b66c;
-    border-radius: 25px;
-    padding: 10px 15px;
-
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,.2);
-}
-
-#kova-probar:hover {
-    background: #28795a;
-}
-
-/* Adaptación a celulares */
 @media (max-width: 600px) {
-    #kova-saludo {
-        right: 10px;
-        bottom: 65px;
-        width: 245px;
-        padding: 10px 25px 10px 8px;
-        gap: 6px;
-    }
-
-    #kova-saludo img {
-        width: 75px;
-        height: 90px;
-    }
-
-    .kova-mensaje {
-        font-size: 11px;
-    }
-
-    .kova-mensaje strong {
-        font-size: 12px;
-    }
-
-    #kova-probar {
-        right: 10px;
-        bottom: 12px;
-        font-size: 11px;
+    .kova-icono-temporada {
+        width: 65px;
+        min-width: 65px;
+        height: 75px;
+        font-size: 45px;
     }
 }
 
-/* Accesibilidad */
 @media (prefers-reduced-motion: reduce) {
-    #kova-nieve span,
-    #kova-saludo img {
+    .kova-decoracion span,
+    .kova-icono-temporada {
         animation: none;
-    }
-
-    #kova-saludo {
-        transition: none;
     }
 }
