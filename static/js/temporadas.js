@@ -68,14 +68,16 @@
             nombre: "Día de Muertos",
             simbolos: ["🏵️", "🧡", "🕯️", "🌼"],
             mensaje: "Recordamos con amor a quienes siempre vivirán en nuestro corazón. 🐾",
+            imagen: "/static/img/kova_dia_muertos.gif",
             color: "#69348a"
+            
         },
         12: {
             nombre: "Navidad",
             simbolos: ["❄️", "❄️", "❄️"],
             mensaje: "¡Kova te desea felices fiestas!",
             color: "#185740",
-            imagen: "/static/img/kova_navidad.webp"
+            imagen: "/static/img/kova_navidad_3d.gif"
         }
     };
 
