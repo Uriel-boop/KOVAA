@@ -323,3 +323,50 @@ input, select, textarea {
         padding: 12px !important;
     }
 }
+
+
+
+/* ==========================================
+   KOVA - PIE DE PÁGINA UNIFICADO
+   ========================================== */
+
+footer.kova-footer {
+    width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
+    margin-top: 24px;
+    padding: 16px 12px;
+    box-sizing: border-box;
+
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    font-weight: 400;
+
+    color: #0E2A47;
+    background: transparent;
+    border: none;
+    opacity: 0.8;
+}
+
+footer.kova-footer a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+footer.kova-footer a:hover {
+    color: #F25487;
+    text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+    footer.kova-footer {
+        margin-top: 18px;
+        padding: 16px 10px;
+        font-size: 0.72rem;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+}

@@ -36,6 +36,7 @@
         .img-slot input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
         .img-slot span { pointer-events: none; z-index: 1; color: #666; }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css', v='2') }}">
 </head>
 <body>
 
@@ -167,6 +168,17 @@
             </form>
         </div>
     </div>
+
+
+    <footer class="kova-footer">
+        • Solución Tecnológica Desarrollada por
+        <a href="https://www.jjmti.com.mx"
+        target="_blank"
+        rel="noopener noreferrer">
+            JJM Tecnologías Innovadoras, S.A. de C.V.
+        </a> •
+    </footer>
+
 
     <script>
         const API_URL = '';
