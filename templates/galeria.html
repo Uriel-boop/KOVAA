@@ -144,7 +144,7 @@
     </style>
     <!-- Estilos de ambientación mensual KOVA -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/temporadas.css', v='20261116-2') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css', v='1') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css', v='3') }}">
 
 </head>
 <body>
@@ -332,16 +332,27 @@
             cargarMascotasUsuario();
         });
 
+        
         function cargarMascotasUsuario() {
-            const storedUser = JSON.parse(localStorage.getItem('kova_current_user') || localStorage.getItem('user') || '{}');
+            const storedUser = JSON.parse(
+                localStorage.getItem('kova_current_user') ||
+                sessionStorage.getItem('usuario') ||
+                localStorage.getItem('user') ||
+                '{}'
+            );
+
             const usuarioId = storedUser.id_usuario || storedUser.id;
-            
+
             if (!usuarioId) {
-                console.warn("No se encontró usuario activo en localStorage.");
+                console.warn("No se encontró usuario activo.");
                 return;
             }
 
-            fetch(`http://127.0.0.1:5000/api/mascotas/${usuarioId}`)
+            // Aquí continúa el código que ya tienes
+            // para consultar y mostrar las mascotas.
+
+
+            fetch(`/api/mascotas/${usuarioId}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'success' && data.mascotas.length > 0) {
@@ -414,7 +425,7 @@
             formData.append('efecto', efectoSeleccionadoKey);
             formData.append('descripcion', efectoDescripcionTexto); // Enviar descripción a la BD
 
-            fetch('http://127.0.0.1:5000/api/subir_y_procesar_ia', {
+            fetch('	/api/subir_y_procesar_ia', {
                 method: 'POST',
                 body: formData
             })
@@ -436,7 +447,7 @@
         }
 
         function cargarGaleriaMascota(mascotaId) {
-            fetch(`http://127.0.0.1:5000/api/galeria/${mascotaId}`)
+            fetch(`/api/galeria/${mascotaId}`)
             .then(res => res.json())
             .then(data => {
                 const grid = document.getElementById('grid-resultados-ia');
@@ -506,7 +517,7 @@
         }
 
         function asignarFotoPerfil(mascotaId, nombreMascota) {
-            fetch('http://127.0.0.1:5000/api/actualizar_foto_perfil_ia', {
+            fetch('/api/actualizar_foto_perfil_ia', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id_mascota: mascotaId, nombre_archivo: archivoActualVisor })

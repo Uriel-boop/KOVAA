@@ -370,3 +370,51 @@ footer.kova-footer a:hover {
         overflow-wrap: anywhere;
     }
 }
+
+
+/* Pie de página uniforme para todas las páginas KOVA */
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+footer.kova-footer {
+    display: block;
+    position: static !important;
+    flex-shrink: 0;
+    width: 100%;
+    margin-top: auto;
+    padding: 20px 12px;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #0E2A47 !important;
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+footer.kova-footer a {
+    color: inherit !important;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+footer.kova-footer a:hover {
+    color: #F25487 !important;
+    text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+    footer.kova-footer {
+        padding: 16px 10px;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+}
