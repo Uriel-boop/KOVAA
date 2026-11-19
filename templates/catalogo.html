@@ -87,9 +87,6 @@
         <button id="btn-servicios" style="background:transparent; color:#d76ba6; border:2px solid #d76ba6; padding:10px 30px; border-radius:20px; font-weight:bold; cursor:pointer;" onclick="mostrarCatalogo('servicios')">Servicios</button>
     </div>
 
-    <!-- Contenedor del Catálogo (El JavaScript se encargará de llenarlo y vaciarlo) -->
-    <div id="grid-catalogo" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:20px; padding:20px;"></div>
-
     <!-- Contenedor del Catálogo -->
     <div id="grid-catalogo" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:20px; padding:20px;"></div>
     
@@ -177,11 +174,11 @@
                 document.getElementById('carrito-titular').textContent = `Titular de compra: "${usuarioActual.nombre_completo}"`;
             }
             // Se mantiene por si usas la cuadrícula antigua en otra parte de la página
-            cargarCatalogoProductos(); 
+            
         });
 
         function cargarCatalogoProductos() {
-            fetch('http://127.0.0.1:5000/api/productos')
+            fetch('/api/productos')
             .then(res => res.json())
             .then(data => {
                 const grid = document.getElementById('grid-productos-publicos');
@@ -198,7 +195,7 @@
                             }
                         }
 
-                        let principalImg = imgs.length > 0 ? `http://127.0.0.1:5000/static/uploads/${imgs[0]}` : 'img/LOGO_KOVA.png';
+                        let principalImg = imgs.length > 0 ? `/static/uploads/${imgs[0]}` : 'img/LOGO_KOVA.png';
                         
                         let miniaturasHtml = '';
                         imgs.forEach(img => {
