@@ -517,11 +517,17 @@ document.addEventListener('DOMContentLoaded', function() {
     inicializarMapaSatelital();
 
     // Obtener todas las mascotas del usuario logueado
-    const storedUser = JSON.parse(localStorage.getItem('kova_current_user') || '{}');
+    const storedUser = JSON.parse(
+        localStorage.getItem('kova_current_user') ||
+        sessionStorage.getItem('usuario') ||
+        localStorage.getItem('user') ||
+        '{}'
+    );
+
     const usuarioId = storedUser.id_usuario || storedUser.id;
 
     if (usuarioId) {
-        fetch(`http://127.0.0.1:5000/api/mascotas/${usuarioId}`)
+        fetch(`/api/mascotas/${usuarioId}`)
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success' && data.mascotas.length > 0) {
@@ -699,7 +705,7 @@ function toggleSimulacionGeocerca() {
 }
 
 function enviarAlertaServidor(fecha, hora) {
-    fetch('http://127.0.0.1:5000/api/enviar_alerta_geocerca', {
+    fetch('/api/enviar_alerta_geocerca', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
