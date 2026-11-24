@@ -23,6 +23,7 @@ from uuid import uuid4
 from PIL import Image, UnidentifiedImageError
 import io
 from rembg import remove
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 def ejecutar_ia_propia(input_path, output_path, efecto):
     """
@@ -99,6 +100,14 @@ def ejecutar_ia_propia(input_path, output_path, efecto):
 
 # 1. Instancia de Flask y soporte CORS
 app = Flask(__name__)
+
+if os.getenv("KOVA_TRUST_PROXY", "false").lower() == "true":
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=1,
+        x_proto=1,
+        x_host=1
+    )
 
 app.config.update(
     SECRET_KEY=os.environ["KOVA_SECRET_KEY"],
