@@ -1,0 +1,1557 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil | KOVA</title>
+
+    <style>
+        :root {
+            --primary-accent: #008BA3;        
+            --primary-accent-hover: #006F82;  
+            --primary-text: #0E2A47;          
+            --brand-identity: #F25487;        
+            --brand-identity-hover: #D83C6F;  
+            --soft-pink: #FDECF0;             
+            --secondary-accent: #5E5CE6;      
+            --bg-gradient-turq: #EBF7FA;      
+            --body-text: #4A5568;             
+            --white-pure: #FFFFFF;            
+            --border-color: #CBD5E1;          
+            --nav-bg-inactive: #DFF0F4; 
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: Arial, sans-serif;
+        }
+
+        .contenedor {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 0 18px;
+        }
+
+        .cabecera {
+            background: var(--vino);
+            color: white;
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: white;
+            color: var(--vino);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cabecera h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        .cabecera p {
+            margin: 5px 0;
+        }
+
+        .tarjeta {
+            background: white;
+            margin-top: 20px;
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid #e9e1e4;
+        }
+
+        .tarjeta h2 {
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+        .campos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        input[readonly] {
+            background: #f2f2f2;
+        }
+
+        .acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button, .boton {
+            background: var(--vino);
+            color: white;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .secundario {
+            background: #eee8eb;
+            color: var(--vino);
+        }
+
+        #mensaje {
+            min-height: 20px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .contenedor {
+                margin: 15px auto;
+            }
+
+            .cabecera {
+                padding: 18px;
+                gap: 12px;
+            }
+
+            .avatar {
+                width: 65px;
+                height: 65px;
+                font-size: 30px;
+            }
+
+            .cabecera h1 {
+                font-size: 21px;
+            }
+
+            .campos {
+                grid-template-columns: 1fr;
+            }
+
+            .tarjeta {
+                padding: 18px;
+            }
+        }
+
+        /* Identidad visual KOVA */
+
+.cabecera {
+    background: linear-gradient(
+        120deg,
+        #F5CBE3,
+        #DCEEFF
+    );
+    color: #354A60;
+    border: 1px solid #E8D7E8;
+}
+
+.avatar {
+    color: #75A9D6;
+    border: 3px solid white;
+}
+
+.tarjeta {
+    background: #FFFFFF;
+    border: 1px solid #E4EAF4;
+    box-shadow: 0 5px 18px rgba(117, 169, 214, 0.08);
+}
+
+.tarjeta h2 {
+    color: #527FA9;
+}
+
+input:focus {
+    outline: none;
+    border-color: #75A9D6;
+    box-shadow: 0 0 0 3px #DDEEFF;
+}
+
+button,
+.boton {
+    background: #75A9D6;
+    color: #FFFFFF;
+}
+
+button:hover,
+.boton:hover {
+    filter: brightness(0.96);
+}
+
+.secundario {
+    background: #F8DCEB;
+    color: #527FA9;
+}
+
+.secundario:hover {
+    background: #F0C9E0;
+}
+
+
+/* Perfil KOVA - Diseño oficial */
+
+body {
+    background: var(--bg-gradient-turq);
+    color: var(--body-text);
+}
+
+.cabecera {
+    background: linear-gradient(
+        115deg,
+        var(--soft-pink),
+        var(--bg-gradient-turq)
+    );
+    color: var(--primary-text);
+    border: 1px solid var(--border-color);
+}
+
+.cabecera h1 {
+    color: var(--primary-text);
+}
+
+.avatar {
+    background: var(--white-pure);
+    color: var(--brand-identity);
+    border: 3px solid var(--white-pure);
+}
+
+.tarjeta {
+    background: var(--white-pure);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 18px rgba(14, 42, 71, 0.06);
+}
+
+.tarjeta h2 {
+    color: var(--primary-text);
+}
+
+label {
+    color: var(--primary-text);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 3px var(--nav-bg-inactive);
+}
+
+button,
+.boton {
+    background: var(--primary-accent);
+    color: var(--white-pure);
+}
+
+button:hover,
+.boton:hover {
+    background: var(--primary-accent-hover);
+}
+
+.secundario {
+    background: var(--soft-pink);
+    color: var(--brand-identity);
+}
+
+.secundario:hover {
+    background: var(--brand-identity);
+    color: var(--white-pure);
+}
+
+
+/* ===================================
+   KOVA - NAVEGACIÓN DEL PERFIL
+=================================== */
+
+.perfil-navbar {
+    width: 100%;
+    min-height: 85px;
+    padding: 15px 30px;
+    background: var(--white-pure);
+    border-bottom: 1px solid var(--border-color);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.perfil-marca {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-text);
+    text-decoration: none;
+    font-size: 20px;
+}
+
+.perfil-logo {
+    font-size: 30px;
+}
+
+.perfil-subtitulo {
+    background: var(--soft-pink);
+    color: var(--brand-identity);
+    border-radius: 25px;
+    padding: 8px 15px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.perfil-nav-acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.perfil-nav-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 17px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--nav-bg-inactive);
+    color: var(--primary-text);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.perfil-salir {
+    background: var(--soft-pink);
+    color: var(--brand-identity);
+}
+
+.perfil-salir:hover {
+    background: var(--brand-identity);
+    color: var(--white-pure);
+}
+
+/* ===================================
+   FOTOGRAFÍA DE PERFIL
+=================================== */
+
+.foto-perfil-contenedor {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.foto-perfil-boton {
+    position: relative;
+    display: block;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.foto-perfil-boton:hover {
+    background: transparent;
+}
+
+.foto-perfil-boton .avatar {
+    width: 95px;
+    height: 95px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--white-pure);
+    font-size: 40px;
+}
+
+.foto-perfil-boton .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-editar {
+    position: absolute;
+    right: -4px;
+    bottom: 0;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--primary-accent);
+    border: 2px solid white;
+    font-size: 15px;
+}
+
+/* ===================================
+   MASCOTAS REGISTRADAS
+=================================== */
+
+.mascotas-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.descripcion {
+    color: var(--body-text);
+    font-size: 14px;
+}
+
+.contador-mascotas {
+    padding: 8px 13px;
+    background: var(--soft-pink);
+    color: var(--brand-identity);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.mascotas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.mascota-tarjeta {
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--white-pure);
+}
+
+.mascota-foto {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: var(--bg-gradient-turq);
+}
+
+.mascota-sin-foto {
+    height: 180px;
+    display: grid;
+    place-items: center;
+    font-size: 55px;
+    background: var(--bg-gradient-turq);
+}
+
+.mascota-datos {
+    padding: 15px;
+}
+
+.mascota-datos h3 {
+    margin: 0 0 10px;
+    color: var(--primary-text);
+}
+
+.mascota-datos p {
+    margin: 6px 0;
+    font-size: 13px;
+    color: var(--body-text);
+}
+
+@media (max-width: 768px) {
+    .perfil-navbar {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+
+    .perfil-nav-acciones {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .perfil-nav-boton {
+        padding: 9px 12px;
+        font-size: 12px;
+    }
+
+    .mascotas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .mascotas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mascotas-encabezado {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+
+.visor-foto[hidden] {
+    display: none;
+}
+
+.visor-foto {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(14, 42, 71, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.visor-contenido {
+    background: var(--white-pure);
+    border-radius: 20px;
+    padding: 25px;
+    width: min(100%, 420px);
+    text-align: center;
+}
+
+.visor-contenido h2 {
+    color: var(--primary-text);
+}
+
+.visor-imagen {
+    margin: 20px auto;
+    width: min(260px, 100%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--soft-pink);
+}
+
+.visor-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.visor-acciones {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+
+
+/* Visor de fotografía KOVA */
+
+.visor-foto[hidden] {
+    display: none !important;
+}
+
+.visor-foto {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    background: rgba(14, 42, 71, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.visor-contenido {
+    width: min(100%, 450px);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 25px;
+    background: var(--white-pure);
+    border-radius: 22px;
+    text-align: center;
+}
+
+.visor-contenido h2 {
+    color: var(--primary-text);
+}
+
+.visor-imagen {
+    width: 100%;
+    height: 320px;
+    margin: 20px auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg-gradient-turq);
+}
+
+.visor-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.visor-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+#editarFoto {
+    background: var(--primary-accent);
+    color: var(--white-pure);
+}
+
+#cerrarVisor {
+    background: var(--soft-pink);
+    color: var(--brand-identity);
+}
+
+@media (max-width: 600px) {
+    .visor-contenido {
+        padding: 18px;
+    }
+
+    .visor-imagen {
+        height: 260px;
+    }
+}
+
+
+/* ======================================
+   KOVA - ELIMINACIÓN DE MASCOTAS
+====================================== */
+
+.boton-eliminar-mascota {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 11px 8px;
+
+    background: var(--soft-pink);
+    color: var(--brand-identity-hover);
+
+    border: 1px solid var(--brand-identity);
+    border-radius: 10px;
+
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.boton-eliminar-mascota:hover {
+    background: var(--brand-identity-hover);
+    color: var(--white-pure);
+}
+
+.modal-eliminar-mascota {
+    width: min(450px, calc(100% - 32px));
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 0;
+    border: none;
+    border-radius: 22px;
+    background: var(--white-pure);
+    box-shadow: 0 15px 50px rgba(14, 42, 71, .2);
+}
+
+.modal-eliminar-mascota::backdrop {
+    background: rgba(14, 42, 71, .65);
+}
+
+.eliminar-contenido {
+    padding: 28px;
+    text-align: center;
+}
+
+.eliminar-icono {
+    display: grid;
+    place-items: center;
+
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 15px;
+
+    background: var(--soft-pink);
+    color: var(--brand-identity);
+    border-radius: 50%;
+    font-size: 28px;
+}
+
+.eliminar-contenido h2 {
+    color: var(--primary-text);
+    margin: 10px 0;
+}
+
+.eliminar-contenido p {
+    color: var(--body-text);
+    line-height: 1.5;
+}
+
+.eliminar-advertencia {
+    background: var(--soft-pink);
+    color: var(--primary-text);
+
+    padding: 15px;
+    margin: 18px 0;
+    border-radius: 12px;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.eliminar-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+#cancelarEliminar {
+    background: var(--nav-bg-inactive);
+    color: var(--primary-text);
+}
+
+#confirmarEliminar {
+    background: var(--brand-identity-hover);
+    color: var(--white-pure);
+}
+
+#confirmarEliminar:hover {
+    background: var(--brand-identity);
+}
+
+#confirmarEliminar:disabled,
+#cancelarEliminar:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+#mensajeEliminar {
+    color: var(--brand-identity-hover);
+    font-size: 13px;
+}
+
+@media (max-width: 480px) {
+
+    .eliminar-contenido {
+        padding: 20px;
+    }
+
+    .eliminar-acciones {
+        flex-direction: column;
+    }
+
+    .eliminar-acciones button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <header class="perfil-navbar">
+        <a href="/" class="perfil-marca">
+            <img src="static/img/LOGO_KOVA.png" alt="Logo KOVA" style="height: 48px; width: auto; border-radius: 6px;">
+            <span class="perfil-subtitulo">Mi perfil</span>
+        </a>
+
+        <nav class="perfil-nav-acciones">
+            <a href="/usuarios" id="volver"
+            class="perfil-nav-boton">
+                Volver a KOVA
+            </a>
+
+            <button type="button"
+                    id="cerrarSesion"
+                    class="perfil-nav-boton perfil-salir">
+                Cerrar sesión
+            </button>
+        </nav>
+    </header>
+
+    <main class="contenedor">
+
+        <section class="cabecera">
+            <div class="foto-perfil-contenedor">
+                <button type="button"
+                        id="cambiarFoto"
+                        class="foto-perfil-boton"
+                        aria-label="Cambiar foto de perfil">
+
+                    <span class="avatar" id="avatar">👤</span>
+
+                    <span class="foto-editar">
+                        📷
+                    </span>
+                </button>
+
+                <input type="file"
+                    id="archivoFoto"
+                    accept="image/jpeg,image/png,image/webp"
+                    hidden>
+            </div>
+
+            <div>
+                <h1 id="nombreCabecera">Mi perfil</h1>
+                <p id="tipoUsuario">Usuario KOVA</p>
+                <p id="estadoCuenta">Cargando...</p>
+            </div>
+        </section>
+
+        
+<section class="tarjeta">
+    <h2>Información personal</h2>
+
+    <form id="formPerfil">
+        <div class="campos">
+            <div>
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre"
+                       minlength="2" maxlength="150" required>
+            </div>
+
+            <div>
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono"
+                       maxlength="20" required>
+            </div>
+
+            <div>
+                <label for="correo">Correo electrónico</label>
+                <input type="email" id="correo" readonly>
+            </div>
+
+            <div>
+                <label for="rol">Rol de la cuenta</label>
+                <input type="text" id="rol" readonly>
+            </div>
+        </div>
+
+        <div class="acciones">
+            <button type="submit" id="guardar">
+                Guardar cambios
+            </button>
+        </div>
+
+        <p id="mensaje" role="status"></p>
+    </form>
+</section>
+
+
+        <section class="tarjeta">
+            <div class="mascotas-encabezado">
+                <div>
+                    <h2>Mis integrantes de la familia</h2>
+                    <p class="descripcion">
+                        Mascotas registradas en mi cuenta KOVA.
+                    </p>
+                </div>
+
+                <span id="totalMascotas" class="contador-mascotas">
+                    0 mascotas
+                </span>
+            </div>
+
+            <div id="listaMascotas" class="mascotas-grid">
+                <p>Cargando mascotas...</p>
+            </div>
+        </section>
+
+
+    </main>
+
+    <div id="visorFoto" class="visor-foto" hidden>
+        <div class="visor-contenido"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Fotografía de perfil">
+
+            <h2>Foto de perfil</h2>
+
+            <div class="visor-imagen">
+                <img id="fotoAmpliada"
+                    alt="Fotografía de perfil">
+            </div>
+
+            <div class="visor-acciones">
+                <button type="button" id="editarFoto">
+                    📷 Editar foto
+                </button>
+
+                <button type="button" id="cerrarVisor"
+                        class="secundario">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <dialog id="modalEliminarMascota"
+            class="modal-eliminar-mascota">
+
+        <div class="eliminar-contenido">
+
+            <div class="eliminar-icono">
+                🗑
+            </div>
+
+            <h2>Eliminar mascota</h2>
+
+            <p>
+                ¿Estás seguro de que deseas eliminar a
+                <strong id="nombreMascotaEliminar"></strong>?
+            </p>
+
+            <div class="eliminar-advertencia">
+                Se eliminará permanentemente su registro,
+                historial clínico, actividades médicas
+                y galería de efectos asociada.
+
+                Esta acción no se puede deshacer.
+            </div>
+
+            <p id="mensajeEliminar" role="status"></p>
+
+            <div class="eliminar-acciones">
+
+                <button type="button"
+                        id="cancelarEliminar"
+                        class="secundario">
+                    Cancelar
+                </button>
+
+                <button type="button"
+                        id="confirmarEliminar">
+                    Sí, eliminar
+                </button>
+
+            </div>
+
+        </div>
+
+    </dialog>
+
+
+    <script>
+        const obtener = id => document.getElementById(id);
+
+        
+        // ======================================
+        // FOTO DE PERFIL
+        // ======================================
+
+
+        document.getElementById('archivoFoto')
+            .addEventListener('change', async function () {
+
+                const archivo = this.files[0];
+                if (!archivo) return;
+
+                if (archivo.size > 5 * 1024 * 1024) {
+                    alert('La imagen no debe superar 5 MB.');
+                    return;
+                }
+
+                const formulario = new FormData();
+                formulario.append('foto', archivo);
+
+                const boton = document.getElementById('cambiarFoto');
+                boton.disabled = true;
+
+                try {
+                    const respuesta = await fetch('/api/perfil/foto', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        body: formulario
+                    });
+
+                    const datos = await respuesta.json();
+
+                    if (!respuesta.ok) {
+                        throw new Error(datos.message);
+                    }
+
+                    const avatar = document.getElementById('avatar');
+                    avatar.replaceChildren();
+
+                    const imagen = document.createElement('img');
+                    imagen.src = datos.foto_perfil;
+                    imagen.alt = 'Foto de perfil';
+
+                    avatar.appendChild(imagen);
+
+                    fotoAmpliada.src = datos.foto_perfil;
+                    visorFoto.hidden = false;
+
+                    alert('Fotografía actualizada correctamente.');
+
+                } catch (error) {
+                    alert(error.message || 'Error al subir la foto.');
+                } finally {
+                    boton.disabled = false;
+                    this.value = '';
+                }
+            });
+
+
+        // ======================================
+        // MASCOTAS DEL USUARIO
+        // ======================================
+
+        async function cargarMascotasPerfil() {
+            const contenedor = document.getElementById('listaMascotas');
+
+            try {
+                const respuesta = await fetch('/api/perfil/mascotas', {
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                });
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(datos.message);
+                }
+
+                const mascotas = datos.mascotas || [];
+
+                document.getElementById('totalMascotas').textContent =
+                    mascotas.length === 1
+                        ? '1 mascota'
+                        : `${mascotas.length} mascotas`;
+
+                contenedor.replaceChildren();
+
+                if (mascotas.length === 0) {
+                    const mensaje = document.createElement('p');
+                    mensaje.textContent =
+                        'Todavía no tienes mascotas registradas.';
+                    contenedor.appendChild(mensaje);
+                    return;
+                }
+
+                mascotas.forEach(mascota => {
+                    const tarjeta = document.createElement('article');
+                    tarjeta.className = 'mascota-tarjeta';
+
+                    
+let foto;
+
+const imagenMascota = String(
+    mascota.imagen || ''
+).trim();
+
+// Aceptar fotografías originales en Base64
+const esBase64 =
+    /^data:image\/(jpeg|jpg|png|webp|gif);base64,/i
+        .test(imagenMascota);
+
+        // Aceptar fotografías almacenadas en static
+        const esRutaLocal =
+            /^\/?static\/[\w/%. -]+$/i
+                .test(imagenMascota);
+
+        if (esBase64 || esRutaLocal) {
+
+            foto = document.createElement('img');
+            foto.className = 'mascota-foto';
+
+            foto.src = esRutaLocal
+                ? '/' + imagenMascota.replace(/^\/+/, '')
+                : imagenMascota;
+
+            foto.alt = `Foto de ${mascota.nombre_mascota}`;
+            foto.loading = 'lazy';
+
+            // Mostrar un icono si la fotografía no carga
+            foto.onerror = function () {
+                const alternativa = document.createElement('div');
+                alternativa.className = 'mascota-sin-foto';
+                alternativa.textContent = '🐾';
+
+                this.replaceWith(alternativa);
+            };
+
+        } else {
+
+            foto = document.createElement('div');
+            foto.className = 'mascota-sin-foto';
+            foto.textContent = '🐾';
+
+        }
+
+
+                    const datos = document.createElement('div');
+                    datos.className = 'mascota-datos';
+
+                    const titulo = document.createElement('h3');
+                    titulo.textContent = mascota.nombre_mascota || 'Sin nombre';
+                    datos.appendChild(titulo);
+
+                    const campos = [
+                        ['Raza', mascota.raza],
+                        ['Sexo', mascota.sexo],
+                        ['Color', mascota.color],
+                        ['Nacimiento', mascota.fecha_nacimiento]
+                    ];
+
+                    campos.forEach(([etiqueta, valor]) => {
+                        if (!valor) return;
+
+                        const parrafo = document.createElement('p');
+                        parrafo.textContent = `${etiqueta}: ${valor}`;
+                        datos.appendChild(parrafo);
+                    });
+
+                    
+                    // Crear botón para eliminar la mascota
+                    const botonEliminar = document.createElement('button');
+
+                    botonEliminar.type = 'button';
+                    botonEliminar.className = 'boton-eliminar-mascota';
+                    botonEliminar.textContent = '🗑 Eliminar mascota';
+
+                    botonEliminar.addEventListener('click', () => {
+
+                        abrirConfirmacionEliminar(
+                            mascota.id_mascota,
+                            mascota.nombre_mascota
+                        );
+
+                    });
+
+                    datos.appendChild(botonEliminar);
+
+                    // Agregar fotografía y datos a la tarjeta
+                    tarjeta.append(foto, datos);
+                    contenedor.appendChild(tarjeta);
+
+                });
+
+            } catch (error) {
+                contenedor.textContent =
+                    error.message || 'No fue posible cargar las mascotas.';
+            }
+        }
+
+        cargarMascotasPerfil();
+
+        // ======================================
+        // ELIMINAR MASCOTAS DEL PERFIL
+        // ======================================
+
+        let mascotaPendienteEliminar = null;
+        let eliminacionEnProceso = false;
+
+        const modalEliminar =
+            document.getElementById('modalEliminarMascota');
+
+        const confirmarEliminar =
+            document.getElementById('confirmarEliminar');
+
+        const cancelarEliminar =
+            document.getElementById('cancelarEliminar');
+
+        const mensajeEliminar =
+            document.getElementById('mensajeEliminar');
+
+
+        function abrirConfirmacionEliminar(idMascota, nombreMascota) {
+
+            if (eliminacionEnProceso) return;
+
+            mascotaPendienteEliminar = idMascota;
+
+            document.getElementById(
+                'nombreMascotaEliminar'
+            ).textContent = nombreMascota || 'esta mascota';
+
+            mensajeEliminar.textContent = '';
+
+            modalEliminar.showModal();
+        }
+
+
+        function cerrarConfirmacionEliminar() {
+
+            if (eliminacionEnProceso) return;
+
+            modalEliminar.close();
+            mascotaPendienteEliminar = null;
+        }
+
+
+        // Cancelar eliminación
+        cancelarEliminar.addEventListener(
+            'click',
+            cerrarConfirmacionEliminar
+        );
+
+
+        // Controlar la tecla Escape
+        modalEliminar.addEventListener('cancel', evento => {
+
+            evento.preventDefault();
+
+            cerrarConfirmacionEliminar();
+
+        });
+
+
+        // Confirmar eliminación
+        confirmarEliminar.addEventListener('click', async () => {
+
+            if (!mascotaPendienteEliminar || eliminacionEnProceso) {
+                return;
+            }
+
+            eliminacionEnProceso = true;
+
+            confirmarEliminar.disabled = true;
+            cancelarEliminar.disabled = true;
+
+            confirmarEliminar.textContent = 'Eliminando...';
+            mensajeEliminar.textContent = '';
+
+            try {
+
+                const respuesta = await fetch(
+                    `/api/perfil/mascotas/${mascotaPendienteEliminar}`,
+                    {
+                        method: 'DELETE',
+                        credentials: 'same-origin'
+                    }
+                );
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok || !datos.success) {
+                    throw new Error(
+                        datos.message || 'No se pudo eliminar.'
+                    );
+                }
+
+                // Cerrar la ventana
+                modalEliminar.close();
+
+                mascotaPendienteEliminar = null;
+
+                // Actualizar las mascotas y el contador
+                await cargarMascotasPerfil();
+
+                alert(datos.message);
+
+            } catch (error) {
+
+                mensajeEliminar.textContent =
+                    error.message || 'Error al eliminar la mascota.';
+
+            } finally {
+
+                eliminacionEnProceso = false;
+
+                confirmarEliminar.disabled = false;
+                cancelarEliminar.disabled = false;
+
+                confirmarEliminar.textContent = 'Sí, eliminar';
+
+            }
+
+        });
+
+
+        async function cargarPerfil() {
+            try {
+                const respuesta = await fetch('/api/perfil', {
+                    credentials: 'same-origin',
+                    cache: 'no-store'
+                });
+
+                if (respuesta.status === 401) {
+                    window.location.replace('/login');
+                    return;
+                }
+
+                const datos = await respuesta.json();
+
+                if (!respuesta.ok) {
+                    throw new Error(datos.message);
+                }
+
+                const usuario = datos.user;
+
+                obtener('nombreCabecera').textContent =
+                    usuario.nombre_completo;
+
+                obtener('tipoUsuario').textContent =
+                    usuario.tipo_usuario || 'Usuario KOVA';
+
+                obtener('estadoCuenta').textContent =
+                    'Estado: ' + usuario.estado_cuenta;
+
+                obtener('nombre').value =
+                    usuario.nombre_completo || '';
+
+                obtener('telefono').value =
+                    usuario.telefono || '';
+
+                obtener('correo').value =
+                    usuario.correo_electronico || '';
+
+                obtener('rol').value =
+                    usuario.rol_sistema || 'usuario';
+
+                const tipo = (
+                    usuario.tipo_usuario || ''
+                ).toLowerCase();
+
+                if (tipo.includes('vendedor')) {
+                    obtener('volver').href = '/vendedor';
+                } else if (tipo.includes('prestador')) {
+                    obtener('volver').href = '/prestador';
+                }
+
+                // Mostrar foto si existe y está en static
+                // Recuperar la foto guardada en MySQL
+                if (usuario.foto_perfil) {
+                    const avatar = document.getElementById('avatar');
+                    const imagen = document.createElement('img');
+
+                    imagen.src = usuario.foto_perfil;
+                    imagen.alt = 'Fotografía de perfil';
+
+                    imagen.onerror = () => {
+                        avatar.textContent = '👤';
+                    };
+
+                    avatar.replaceChildren(imagen);
+                }
+
+            } catch (error) {
+                obtener('mensaje').textContent =
+                    error.message || 'Error al cargar perfil.';
+            }
+        }
+
+        obtener('formPerfil').addEventListener(
+            'submit',
+            async function(evento) {
+                evento.preventDefault();
+
+                const boton = obtener('guardar');
+                boton.disabled = true;
+
+                obtener('mensaje').textContent = 'Guardando...';
+
+                try {
+                    const respuesta = await fetch('/api/perfil', {
+                        method: 'PUT',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            nombre_completo:
+                                obtener('nombre').value,
+                            telefono:
+                                obtener('telefono').value
+                        })
+                    });
+
+                    const datos = await respuesta.json();
+
+                    if (!respuesta.ok) {
+                        throw new Error(datos.message);
+                    }
+
+                    obtener('nombreCabecera').textContent =
+                        datos.user.nombre_completo;
+
+                    obtener('mensaje').textContent =
+                        'Datos actualizados correctamente.';
+
+                } catch (error) {
+                    obtener('mensaje').textContent =
+                        error.message;
+                } finally {
+                    boton.disabled = false;
+                }
+            }
+        );
+
+        obtener('cerrarSesion').addEventListener(
+            'click',
+            async function() {
+                try {
+                    const respuesta = await fetch('/api/logout', {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    });
+
+                    if (!respuesta.ok) {
+                        throw new Error('No se pudo cerrar sesión.');
+                    }
+
+                    localStorage.removeItem('kova_current_user');
+                    window.location.replace('/login');
+
+                } catch (error) {
+                    obtener('mensaje').textContent = error.message;
+                }
+            }
+        );
+
+        cargarPerfil();
+
+
+// ======================================
+// VISOR DE FOTOGRAFÍA DE PERFIL
+// ======================================
+
+const visorFoto = document.getElementById('visorFoto');
+const fotoAmpliada = document.getElementById('fotoAmpliada');
+const archivoFoto = document.getElementById('archivoFoto');
+
+// Abrir la fotografía de perfil
+document.getElementById('cambiarFoto')
+    .addEventListener('click', function () {
+
+        const fotoActual = document.querySelector('#avatar img');
+
+        if (fotoActual && fotoActual.getAttribute('src')) {
+            fotoAmpliada.src = fotoActual.src;
+            visorFoto.hidden = false;
+        } else {
+            archivoFoto.click();
+        }
+    });
+
+// Seleccionar una nueva fotografía
+document.getElementById('editarFoto')
+    .addEventListener('click', function () {
+        archivoFoto.value = '';
+        archivoFoto.click();
+    });
+
+// Cerrar el visor
+document.getElementById('cerrarVisor')
+    .addEventListener('click', function () {
+        visorFoto.hidden = true;
+    });
+
+// Cerrar al pulsar fuera de la fotografía
+visorFoto.addEventListener('click', function (evento) {
+    if (evento.target === visorFoto) {
+        visorFoto.hidden = true;
+    }
+});
+
+// Cerrar con la tecla Escape
+document.addEventListener('keydown', function (evento) {
+    if (evento.key === 'Escape') {
+        visorFoto.hidden = true;
+    }
+});
+        
+
+
+
+document.getElementById('cambiarFoto')
+    .addEventListener('click', () => {
+        const fotoActual =
+            document.querySelector('#avatar img');
+
+        if (fotoActual) {
+            fotoAmpliada.src = fotoActual.src;
+            visorFoto.hidden = false;
+        } else {
+            document.getElementById('archivoFoto').click();
+        }
+    });
+
+    document.getElementById('editarFoto')
+        .addEventListener('click', () => {
+            document.getElementById('archivoFoto').click();
+        });
+
+    document.getElementById('cerrarVisor')
+        .addEventListener('click', () => {
+            visorFoto.hidden = true;
+        });
+
+    visorFoto.addEventListener('click', evento => {
+        if (evento.target === visorFoto) {
+            visorFoto.hidden = true;
+        }
+    });
+
+    document.addEventListener('keydown', evento => {
+        if (evento.key === 'Escape') {
+            visorFoto.hidden = true;
+        }
+    });
+
+
+        
+
+    </script>
+
+    <div id="visorFoto" class="visor-foto" hidden>
+        <div class="visor-contenido"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Fotografía de perfil">
+
+            <h2>Foto de perfil</h2>
+
+            <div class="visor-imagen">
+                <img id="fotoAmpliada"
+                    alt="Fotografía de perfil">
+            </div>
+
+            <div class="visor-acciones">
+                <button type="button" id="editarFoto">
+                    📷 Editar foto
+                </button>
+
+                <button type="button" id="cerrarVisor"
+                        class="secundario">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

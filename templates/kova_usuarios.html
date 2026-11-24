@@ -421,6 +421,8 @@
     <!-- Estilos de ambientación mensual KOVA -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/temporadas.css', v='20261116-2') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css', v='1') }}">
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/perfil-global.css') }}">
 
 </head>
 <body>
@@ -438,10 +440,12 @@
         <div class="header-actions">
             <button onclick="cerrarSesion()" class="btn-logout">Cerrar Sesión</button>
         </div>
+        
     </header>
 
     <!-- Navegación Dinámica -->
     <div id="navbar-container"></div>
+    
 
     <main class="main-container">
         <!-- Sidebar Izquierda: Datos del Canino -->
@@ -1729,7 +1733,41 @@ document.addEventListener('DOMContentLoaded', function() {
     <!-- Animaciones y festividades de KOVA -->
     <script src="{{ url_for('static', filename='js/temporadas.js', v='20261116-2') }}" defer></script>
 
+    
 
+<style>
+    .boton-mi-perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+    border-radius: 12px;
+
+    background: #F8DCEB;
+    color: #426B91;
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    border: 1px solid #EFC4DB;
+    transition: background 0.2s ease;
+}
+
+.boton-mi-perfil:hover {
+    background: #EAC9E3;
+}
+
+@media (max-width: 600px) {
+    .boton-mi-perfil {
+        padding: 9px 11px;
+        font-size: 13px;
+    }
+}
+</style>
+<script src="{{ url_for('static', filename='js/perfil-global.js') }}" defer></script>
 
 </body>
 </html>

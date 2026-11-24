@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 import os
 import random
 import re
-from flask import Flask, jsonify, request, render_template, send_from_directory
+from flask import Flask, jsonify, request, render_template, send_from_directory, session, redirect
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import timedelta as session_timedelta
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from google.auth.transport import requests as google_requests
@@ -16,7 +18,9 @@ import json
 from werkzeug.utils import secure_filename
 
 import shutil
-from PIL import Image
+from pathlib import Path
+from uuid import uuid4
+from PIL import Image, UnidentifiedImageError
 import io
 from rembg import remove
 
@@ -95,8 +99,16 @@ def ejecutar_ia_propia(input_path, output_path, efecto):
 
 # 1. Instancia de Flask y soporte CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
+app.config.update(
+    SECRET_KEY=os.environ["KOVA_SECRET_KEY"],
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=os.getenv("KOVA_HTTPS", "false").lower() == "true",
+    PERMANENT_SESSION_LIFETIME=session_timedelta(hours=12),
+)
+
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # KOVA - Inyectar efectos de temporada en las páginas HTML
 @app.after_request
@@ -275,6 +287,10 @@ def api_login():
         conn.close()
 
         if usuario:
+            session.clear()
+            session['id_usuario'] = usuario['id_usuario']
+            session.permanent = True
+
             tipo_usuario = str(usuario.get('tipo_usuario', 'Titular de mascota')).strip()
             return jsonify({
                 "success": True,
@@ -1083,6 +1099,10 @@ def google_login():
         cursor.close()
         conn.close()
 
+        session.clear()
+        session['id_usuario'] = usuario['id_usuario']
+        session.permanent = True
+
         tipo_usuario = str(usuario.get('tipo_usuario', 'Titular de mascota')).strip()
 
         return jsonify({
@@ -1096,6 +1116,484 @@ def google_login():
     except Exception as e:
         print("Error en /api/google_login:", str(e))
         return jsonify({"success": False, "message": f"Error al autenticar con Google: {str(e)}"}), 500
+
+
+# ============================================================
+# KOVA - PERFIL DE USUARIO
+# ============================================================
+
+@app.route('/perfil')
+def perfil_usuario():
+    if not session.get('id_usuario'):
+        return redirect('/login')
+
+    return render_template('perfil.html')
+
+
+@app.route('/api/perfil', methods=['GET', 'PUT'])
+def api_perfil():
+    id_usuario = session.get('id_usuario')
+
+    if not id_usuario:
+        return jsonify({
+            'success': False,
+            'message': 'Debes iniciar sesión.'
+        }), 401
+
+    # Comprobar el origen de las solicitudes de modificación
+    if request.method == 'PUT':
+        origin = request.headers.get('Origin')
+        if origin and origin.rstrip('/') != request.host_url.rstrip('/'):
+            return jsonify({
+                'success': False,
+                'message': 'Origen no autorizado.'
+            }), 403
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor(dictionary=True)
+
+        # Primero comprobar que la cuenta exista y esté activa
+        cursor.execute("""
+            SELECT id_usuario, estado_cuenta
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        cuenta = cursor.fetchone()
+
+        if not cuenta:
+            session.clear()
+            return jsonify({
+                'success': False,
+                'message': 'Usuario no encontrado.'
+            }), 404
+
+        if cuenta['estado_cuenta'] != 'activo':
+            session.clear()
+            return jsonify({
+                'success': False,
+                'message': 'La cuenta no está activa.'
+            }), 403
+
+        # Actualizar datos personales
+        if request.method == 'PUT':
+            datos = request.get_json(silent=True) or {}
+
+            nombre = str(
+                datos.get('nombre_completo') or ''
+            ).strip()
+
+            telefono = str(
+                datos.get('telefono') or ''
+            ).strip()
+
+            if not 2 <= len(nombre) <= 150:
+                return jsonify({
+                    'success': False,
+                    'message': 'El nombre debe tener entre 2 y 150 caracteres.'
+                }), 400
+
+            if not 1 <= len(telefono) <= 20:
+                return jsonify({
+                    'success': False,
+                    'message': 'Ingresa un teléfono válido.'
+                }), 400
+
+            cursor.execute("""
+                UPDATE usuarios
+                SET nombre_completo = %s,
+                    telefono = %s
+                WHERE id_usuario = %s
+            """, (nombre, telefono, id_usuario))
+
+            conexion.commit()
+
+        # Obtener información actualizada
+        cursor.execute("""
+            SELECT
+                id_usuario,
+                nombre_completo,
+                correo_electronico,
+                telefono,
+                tipo_usuario,
+                foto_perfil,
+                rol_sistema,
+                estado_cuenta,
+                fecha_registro
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+
+        if usuario.get('fecha_registro'):
+            usuario['fecha_registro'] = (
+                usuario['fecha_registro'].isoformat()
+            )
+
+        return jsonify({
+            'success': True,
+            'user': usuario
+        }), 200
+
+    except Exception:
+        app.logger.exception('Error en perfil de KOVA')
+
+        return jsonify({
+            'success': False,
+            'message': 'No fue posible procesar el perfil.'
+        }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+
+        if conexion:
+            conexion.close()
+
+
+@app.route('/api/logout', methods=['POST'])
+def cerrar_sesion_kova():
+    origin = request.headers.get('Origin')
+
+    if origin and origin.rstrip('/') != request.host_url.rstrip('/'):
+        return jsonify({'success': False}), 403
+
+    session.clear()
+
+    return jsonify({'success': True}), 200
+
+
+# ============================================================
+# KOVA - FOTO DE PERFIL Y MASCOTAS DEL USUARIO
+# ============================================================
+
+@app.route('/api/perfil/foto', methods=['POST'])
+def subir_foto_perfil():
+    id_usuario = session.get('id_usuario')
+
+    if not id_usuario:
+        return jsonify({
+            'success': False,
+            'message': 'Debes iniciar sesión.'
+        }), 401
+
+    origin = request.headers.get('Origin')
+    if origin and origin.rstrip('/') != request.host_url.rstrip('/'):
+        return jsonify({
+            'success': False,
+            'message': 'Origen no autorizado.'
+        }), 403
+
+    archivo = request.files.get('foto')
+
+    if not archivo or not archivo.filename:
+        return jsonify({
+            'success': False,
+            'message': 'Selecciona una fotografía.'
+        }), 400
+
+    # Máximo 5 MB
+    contenido = archivo.read(5 * 1024 * 1024 + 1)
+
+    if len(contenido) > 5 * 1024 * 1024:
+        return jsonify({
+            'success': False,
+            'message': 'La imagen no debe superar 5 MB.'
+        }), 413
+
+    import io
+
+    try:
+        imagen = Image.open(io.BytesIO(contenido))
+        imagen.verify()
+
+        imagen = Image.open(io.BytesIO(contenido))
+        imagen = imagen.convert('RGB')
+        imagen.thumbnail((600, 600))
+
+    except (UnidentifiedImageError, OSError, ValueError):
+        return jsonify({
+            'success': False,
+            'message': 'Selecciona una imagen válida.'
+        }), 400
+
+    carpeta = Path(app.static_folder) / 'uploads' / 'perfiles'
+    carpeta.mkdir(parents=True, exist_ok=True)
+
+    nombre_archivo = f'{uuid4().hex}.jpg'
+    destino = carpeta / nombre_archivo
+    ruta_web = f'/static/uploads/perfiles/{nombre_archivo}'
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT estado_cuenta
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+
+        if not usuario or usuario['estado_cuenta'] != 'activo':
+            return jsonify({
+                'success': False,
+                'message': 'Cuenta no disponible.'
+            }), 403
+
+        imagen.save(destino, 'JPEG', quality=85)
+
+        cursor.execute("""
+            UPDATE usuarios
+            SET foto_perfil = %s
+            WHERE id_usuario = %s
+        """, (ruta_web, id_usuario))
+
+        conexion.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Foto actualizada correctamente.',
+            'foto_perfil': ruta_web
+        })
+
+    except Exception:
+        app.logger.exception('Error al actualizar foto de perfil')
+
+        if destino.exists():
+            destino.unlink()
+
+        return jsonify({
+            'success': False,
+            'message': 'No fue posible guardar la fotografía.'
+        }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+@app.route('/api/perfil/mascotas', methods=['GET'])
+def mascotas_del_perfil():
+    id_usuario = session.get('id_usuario')
+
+    if not id_usuario:
+        return jsonify({
+            'success': False,
+            'message': 'Debes iniciar sesión.'
+        }), 401
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        cursor = conexion.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT estado_cuenta
+            FROM usuarios
+            WHERE id_usuario = %s
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+
+        if not usuario or usuario['estado_cuenta'] != 'activo':
+            return jsonify({
+                'success': False,
+                'message': 'Cuenta no disponible.'
+            }), 403
+
+        cursor.execute("""
+            SELECT
+                id_mascota,
+                nombre_mascota,
+                raza,
+                sexo,
+                color,
+                imagen,
+                fecha_nacimiento
+            FROM registro_mascota
+            WHERE id_usuario = %s
+            ORDER BY id_mascota DESC
+        """, (id_usuario,))
+
+        mascotas = cursor.fetchall()
+
+        for mascota in mascotas:
+            fecha = mascota.get('fecha_nacimiento')
+            if fecha:
+                mascota['fecha_nacimiento'] = fecha.isoformat()
+
+        return jsonify({
+            'success': True,
+            'mascotas': mascotas
+        })
+
+    except Exception:
+        app.logger.exception('Error al cargar mascotas del perfil')
+
+        return jsonify({
+            'success': False,
+            'message': 'No fue posible cargar las mascotas.'
+        }), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+
+# ============================================================
+# KOVA - ELIMINAR MASCOTA DESDE EL PERFIL
+# ============================================================
+
+@app.route(
+    '/api/perfil/mascotas/<int:id_mascota>',
+    methods=['DELETE']
+)
+def eliminar_mascota_perfil(id_mascota):
+
+    id_usuario = session.get('id_usuario')
+
+    if not id_usuario:
+        return jsonify({
+            'success': False,
+            'message': 'Debes iniciar sesión.'
+        }), 401
+
+    # Verificar origen de la solicitud
+    origin = request.headers.get('Origin')
+
+    if origin != request.host_url.rstrip('/'):
+        return jsonify({
+            'success': False,
+            'message': 'Origen no autorizado.'
+        }), 403
+
+    conexion = None
+    cursor = None
+
+    try:
+        conexion = get_db_connection()
+        conexion.start_transaction()
+
+        cursor = conexion.cursor(dictionary=True)
+
+        # Verificar que la cuenta esté activa
+        cursor.execute("""
+            SELECT estado_cuenta
+            FROM usuarios
+            WHERE id_usuario = %s
+            FOR UPDATE
+        """, (id_usuario,))
+
+        usuario = cursor.fetchone()
+
+        if not usuario or usuario['estado_cuenta'] != 'activo':
+
+            conexion.rollback()
+
+            return jsonify({
+                'success': False,
+                'message': 'La cuenta no está disponible.'
+            }), 403
+
+        # Verificar que la mascota pertenezca al usuario
+        cursor.execute("""
+            SELECT id_mascota, nombre_mascota
+            FROM registro_mascota
+            WHERE id_mascota = %s
+              AND id_usuario = %s
+            FOR UPDATE
+        """, (id_mascota, id_usuario))
+
+        mascota = cursor.fetchone()
+
+        if not mascota:
+
+            conexion.rollback()
+
+            return jsonify({
+                'success': False,
+                'message': 'Mascota no encontrada.'
+            }), 404
+
+        # Eliminar registros de la galería
+        cursor.execute("""
+            DELETE FROM galeria_ia
+            WHERE id_mascota = %s
+        """, (id_mascota,))
+
+        # Eliminar historial clínico
+        cursor.execute("""
+            DELETE FROM historial_clinico
+            WHERE id_mascota = %s
+        """, (id_mascota,))
+
+        # Eliminar actividades médicas
+        cursor.execute("""
+            DELETE FROM actividades_medicas
+            WHERE id_mascota = %s
+        """, (id_mascota,))
+
+        # Eliminar el registro principal
+        cursor.execute("""
+            DELETE FROM registro_mascota
+            WHERE id_mascota = %s
+              AND id_usuario = %s
+        """, (id_mascota, id_usuario))
+
+        if cursor.rowcount != 1:
+            raise RuntimeError(
+                'No se pudo eliminar el registro principal.'
+            )
+
+        # Confirmar todos los cambios
+        conexion.commit()
+
+        return jsonify({
+            'success': True,
+            'message': (
+                f"{mascota['nombre_mascota']} "
+                "fue eliminada correctamente."
+            )
+        }), 200
+
+    except Exception:
+
+        if conexion:
+            conexion.rollback()
+
+        app.logger.exception(
+            'Error al eliminar mascota del perfil'
+        )
+
+        return jsonify({
+            'success': False,
+            'message': 'No fue posible eliminar la mascota.'
+        }), 500
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if conexion:
+            conexion.close()
 
 
 if __name__ == '__main__':
