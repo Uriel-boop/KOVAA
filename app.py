@@ -117,7 +117,55 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=session_timedelta(hours=12),
 )
 
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+# ============================================================
+# KOVA - CONFIGURACION DE ORIGENES AUTORIZADOS
+# ============================================================
+
+KOVA_PRODUCCION = (
+    os.getenv("KOVA_HTTPS", "false").lower() == "true"
+)
+
+KOVA_ORIGEN_PUBLICO = os.getenv(
+    "KOVA_ALLOWED_ORIGIN", ""
+).strip().rstrip("/")
+
+if KOVA_PRODUCCION:
+
+    ORIGENES_PERMITIDOS = {
+        KOVA_ORIGEN_PUBLICO
+    } if KOVA_ORIGEN_PUBLICO else set()
+
+else:
+
+    ORIGENES_PERMITIDOS = {
+        "http://localhost:5000",
+        "http://127.0.0.1:5000"
+    }
+
+
+# Configuracion CORS
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": sorted(ORIGENES_PERMITIDOS)
+        }
+    },
+    supports_credentials=True
+)
+
+
+# Validar el origen de las solicitudes
+def origen_autorizado_kova():
+
+    origin = request.headers.get("Origin", "")
+    origin = origin.strip().rstrip("/")
+
+    return bool(
+        origin and origin in ORIGENES_PERMITIDOS
+    )
+
 
 # KOVA - Inyectar efectos de temporada en las páginas HTML
 @app.after_request
@@ -1148,15 +1196,16 @@ def api_perfil():
             'success': False,
             'message': 'Debes iniciar sesión.'
         }), 401
-
+    
     # Comprobar el origen de las solicitudes de modificación
     if request.method == 'PUT':
-        origin = request.headers.get('Origin')
-        if origin and origin.rstrip('/') != request.host_url.rstrip('/'):
+
+        if not origen_autorizado_kova():
             return jsonify({
                 'success': False,
                 'message': 'Origen no autorizado.'
             }), 403
+
 
     conexion = None
     cursor = None
@@ -1265,16 +1314,21 @@ def api_perfil():
             conexion.close()
 
 
+
 @app.route('/api/logout', methods=['POST'])
 def cerrar_sesion_kova():
-    origin = request.headers.get('Origin')
-
-    if origin and origin.rstrip('/') != request.host_url.rstrip('/'):
-        return jsonify({'success': False}), 403
+    if not origen_autorizado_kova():
+        return jsonify({
+            'success': False,
+            'message': 'Origen no autorizado.'
+        }), 403
 
     session.clear()
 
-    return jsonify({'success': True}), 200
+    return jsonify({
+        'success': True
+    }), 200
+
 
 
 # ============================================================
@@ -1291,12 +1345,13 @@ def subir_foto_perfil():
             'message': 'Debes iniciar sesión.'
         }), 401
 
-    origin = request.headers.get('Origin')
-    if origin and origin.rstrip('/') != request.host_url.rstrip('/'):
+    
+    if not origen_autorizado_kova():
         return jsonify({
             'success': False,
             'message': 'Origen no autorizado.'
         }), 403
+
 
     archivo = request.files.get('foto')
 
@@ -1484,14 +1539,14 @@ def eliminar_mascota_perfil(id_mascota):
             'message': 'Debes iniciar sesión.'
         }), 401
 
+    
     # Verificar origen de la solicitud
-    origin = request.headers.get('Origin')
-
-    if origin != request.host_url.rstrip('/'):
+    if not origen_autorizado_kova():
         return jsonify({
             'success': False,
             'message': 'Origen no autorizado.'
         }), 403
+
 
     conexion = None
     cursor = None
