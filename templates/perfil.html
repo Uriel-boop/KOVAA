@@ -1436,122 +1436,67 @@ const esBase64 =
         cargarPerfil();
 
 
-// ======================================
-// VISOR DE FOTOGRAFÍA DE PERFIL
-// ======================================
 
-const visorFoto = document.getElementById('visorFoto');
-const fotoAmpliada = document.getElementById('fotoAmpliada');
-const archivoFoto = document.getElementById('archivoFoto');
+    // ======================================
+    // VISOR DE FOTOGRAFÍA DE PERFIL
+    // ======================================
 
-// Abrir la fotografía de perfil
-document.getElementById('cambiarFoto')
-    .addEventListener('click', function () {
+    const visorFoto = document.getElementById('visorFoto');
+    const fotoAmpliada = document.getElementById('fotoAmpliada');
+    const archivoFoto = document.getElementById('archivoFoto');
 
-        const fotoActual = document.querySelector('#avatar img');
+    document.getElementById('cambiarFoto')
+        .addEventListener('click', function () {
 
-        if (fotoActual && fotoActual.getAttribute('src')) {
-            fotoAmpliada.src = fotoActual.src;
-            visorFoto.hidden = false;
-        } else {
-            archivoFoto.click();
-        }
-    });
+            const fotoActual =
+                document.querySelector('#avatar img');
 
-// Seleccionar una nueva fotografía
-document.getElementById('editarFoto')
-    .addEventListener('click', function () {
-        archivoFoto.value = '';
-        archivoFoto.click();
-    });
+            if (fotoActual && fotoActual.getAttribute('src')) {
 
-// Cerrar el visor
-document.getElementById('cerrarVisor')
-    .addEventListener('click', function () {
-        visorFoto.hidden = true;
-    });
+                fotoAmpliada.src = fotoActual.src;
+                visorFoto.hidden = false;
 
-// Cerrar al pulsar fuera de la fotografía
-visorFoto.addEventListener('click', function (evento) {
-    if (evento.target === visorFoto) {
-        visorFoto.hidden = true;
-    }
-});
+            } else {
 
-// Cerrar con la tecla Escape
-document.addEventListener('keydown', function (evento) {
-    if (evento.key === 'Escape') {
-        visorFoto.hidden = true;
-    }
-});
-        
+                archivoFoto.value = '';
+                archivoFoto.click();
 
+            }
+        });
 
-
-document.getElementById('cambiarFoto')
-    .addEventListener('click', () => {
-        const fotoActual =
-            document.querySelector('#avatar img');
-
-        if (fotoActual) {
-            fotoAmpliada.src = fotoActual.src;
-            visorFoto.hidden = false;
-        } else {
-            document.getElementById('archivoFoto').click();
-        }
-    });
 
     document.getElementById('editarFoto')
-        .addEventListener('click', () => {
-            document.getElementById('archivoFoto').click();
+        .addEventListener('click', function () {
+
+            archivoFoto.value = '';
+            archivoFoto.click();
+
         });
+
 
     document.getElementById('cerrarVisor')
-        .addEventListener('click', () => {
+        .addEventListener('click', function () {
+
             visorFoto.hidden = true;
+
         });
 
-    visorFoto.addEventListener('click', evento => {
+
+    visorFoto.addEventListener('click', function (evento) {
+
         if (evento.target === visorFoto) {
             visorFoto.hidden = true;
         }
+
     });
 
-    document.addEventListener('keydown', evento => {
+
+    document.addEventListener('keydown', function (evento) {
+
         if (evento.key === 'Escape') {
             visorFoto.hidden = true;
         }
     });
-
-
-        
-
     </script>
-
-    <div id="visorFoto" class="visor-foto" hidden>
-        <div class="visor-contenido"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Fotografía de perfil">
-
-            <h2>Foto de perfil</h2>
-
-            <div class="visor-imagen">
-                <img id="fotoAmpliada"
-                    alt="Fotografía de perfil">
-            </div>
-
-            <div class="visor-acciones">
-                <button type="button" id="editarFoto">
-                    📷 Editar foto
-                </button>
-
-                <button type="button" id="cerrarVisor"
-                        class="secundario">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
